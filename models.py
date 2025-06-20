@@ -1,0 +1,30 @@
+from extensions import db
+from werkzeug.security import generate_password_hash, check_password_hash
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+
+    def set_id(self, id):
+        self.id = id
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+class Device(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    model = db.Column(db.String(100), unique=True)
+    is_active = db.Column(db.Boolean, default=True)
+    last_updated = db.Column(db.DateTime)
+
+#    python
+#>>> from app_instance import app
+#>>> from extensions import db
+#>>> from models import Device
+#>>> with app.app_context():
+#...     db.create_all()

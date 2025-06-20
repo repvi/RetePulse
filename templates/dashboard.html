@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Revint</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Dashboard</h2>
+        <div class="inner-main-card">
+            <div class="card" id="esp-card">
+                <h3>Connected ESP32s</h3>
+            
+                <div class="inner-esp-card">
+                    <div id="esp-display-area"></div>
+                </div>
+
+                <h3>LED Control</h3>
+                <button class="toggle-button off" id="toggle-button">LED</button>
+            </div>
+
+            <div class="card" id="sensor-card">
+                <h3>Sensor Data</h3>
+                <div class="circle-container">
+                    <div class="circle">
+                        <div class="progress" id="progress">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
+        <div class="upload">
+            <a href="{{ url_for('upload_file') }}">Upload Firmware</a>
+        </div>
+        <br>
+        <a href="/logout" style="text-align: center;">Logout</a>
+    </div>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
