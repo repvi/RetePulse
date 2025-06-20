@@ -60,7 +60,7 @@
   <div class="container">
     <h2>Add user</h2>
     <form action="{{ url_for('register') }}" method="post"> <!-- Python code hybrid -->
-      <input type="text" name="username" placeholder="Username" required> <!-- Placeholder is what shows as default -->
+      <input type="text" name="username" placeholder="Username" autocomplete="off" autocomplete="new-username" required> <!-- Placeholder is what shows as default -->
       <input type="password" name="password" placeholder="Password" required>
       <label type="user_role" for="user_role">Choose role:</label>
       <select id="user_role" name="user_role">

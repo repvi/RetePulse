@@ -1,12 +1,28 @@
 let espCount = 0;
 let ledState = false; // Initial LED state is off
 
+window.onload = function() {
+    document.getElementById('toggle-button').onclick = toggleLED;
+};
+
+function animateNewCard(element) {
+  gsap.fromTo(element, { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.3 });
+}
+
 function addESP32Display() {
     espCount++;
-    const el = document.createElement('div');
-    el.className = 'esp-display-box';
-    el.id = 'dummy'; /* Change to the code given in python */
-    document.getElementById('esp-display-area').appendChild(el);
+
+    const template = document.getElementById("esp-display-box-template");
+    const container = document.getElementById("esp-display-area");
+
+    // Clone just the actual ESP box element
+    const newCard = template.content.querySelector('.esp-display-box').cloneNode(true);
+
+    // Add to page (still hidden)
+    container.appendChild(newCard);
+
+    // Animate it after the frame renders
+    animateNewCard(newCard);
 }
 
 function removeESP32Display() {
@@ -18,10 +34,6 @@ function removeESP32Display() {
         }
     }
 }
-
-window.onload = function() {
-    document.getElementById('toggle-button').onclick = toggleLED;
-};
 
 function toggleLED() {
     const command = ledState ? 'off' : 'on';
@@ -64,7 +76,7 @@ function updateSensorData(sensorData) {
         )`;
 }
 
-    // Simulate updating sensor data (replace with actual sensor data update logic)
+// Simulate updating sensor data (replace with actual sensor data update logic)
 setInterval(() => {
     const sensorData = Math.random() * 100; // do
     updateSensorData(sensorData);

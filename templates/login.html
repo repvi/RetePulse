@@ -53,7 +53,7 @@
     <div class="container">
         <h2>Login</h2>
         <form action="{{ url_for('login') }}" method="post"> <!-- Python code hybrid -->
-            <input type="text" name="username" placeholder="Username" required> <!-- Placeholder is what shows as default -->
+            <input type="text" name="username" placeholder="Username" autocomplete="off" autocomplete="new-username" required> <!-- Placeholder is what shows as default -->
             <input type="password" name="password" placeholder="Password" required>
             <input type="submit" value="Login">
         </form>
