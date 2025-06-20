@@ -5,6 +5,12 @@ import platform
 
 CONFIG_DEBUG = True
 
+MQTT_BROKER = "test.mosquitto.org" # for windows
+# MQTT_BROKER = "localhost" # for linux
+MQTT_TOPIC_LED = "home/led"
+MQTT_TOPIC_OTA = "home/ota"
+MQTT_TOPIC_SENSOR = "home/sensor"
+
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
     client.subscribe(MQTT_TOPIC_SENSOR)
@@ -13,12 +19,6 @@ def on_message(client, userdata, msg):
     global sensor_data
     sensor_data = msg.payload.decode()
     print(f"Received message: {sensor_data}")
-
-MQTT_BROKER = "test.mosquitto.org" # for windows
-# MQTT_BROKER = "localhost" # for linux
-MQTT_TOPIC_LED = "home/led"
-MQTT_TOPIC_OTA = "home/ota"
-MQTT_TOPIC_SENSOR = "home/sensor"
 
 mqtt_client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION1)
 mqtt_client.on_connect = on_connect
