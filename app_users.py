@@ -16,9 +16,8 @@ def register():
             flash('Username already taken.')
             return redirect(url_for('register'))
 
-        new_user = User(username=username)
+        new_user = User(username=username, role_id=role_id)
         new_user.set_password(password)
-        new_user.set_role_id(role_id)
 
         db.session.add(new_user)
         db.session.commit()
@@ -38,6 +37,8 @@ def login():
 
         if user and user.check_password(password):
             session['user_id'] = user.id
+            session['role_id'] = user.role_id
+            # do not get the session password, not needed
             flash('Welcome back!')
             return redirect(url_for('dashboard'))  # Redirect to next page, successful login
         else:

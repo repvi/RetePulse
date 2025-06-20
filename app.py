@@ -1,6 +1,6 @@
 from flask import request, render_template, redirect, url_for, flash
 from app_instance import app
-from app_config import run_flask, send_message_to_esp, MQTT_TOPIC_LED, MQTT_TOPIC_OTA
+from app_config import run_flask, send_message, MQTT_TOPIC_LED, MQTT_TOPIC_OTA
 from app_users import register, login, logout # needs to be included
 from werkzeug.utils import secure_filename
 from auth_utils import login_required
@@ -25,9 +25,9 @@ def dashboard():
 @login_required
 def led_control(state):
     if state == 'on':
-        send_message_to_esp(MQTT_TOPIC_LED, "on")
+        send_message(MQTT_TOPIC_LED, "on")
     elif state == 'off':
-        send_message_to_esp(MQTT_TOPIC_LED, "off")
+        send_message(MQTT_TOPIC_LED, "off")
     # return jsonify(success=True)
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -44,7 +44,7 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            send_message_to_esp(MQTT_TOPIC_OTA, "update")
+            send_message(MQTT_TOPIC_OTA, "update")
             flash('File successfully uploaded and OTA update initiated')
             return redirect(url_for('dashboard'))
     return render_template('upload.html')

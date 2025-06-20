@@ -26,7 +26,7 @@ mqtt_client.on_message = on_message
 mqtt_client.connect(MQTT_BROKER, 1883, 60)
 mqtt_client.loop_start()
 
-def send_message_to_esp(literal, message):
+def send_message(literal, message):
     mqtt_client.publish(literal, message)
 
 def run_flask(host, port, debug):
