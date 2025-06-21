@@ -1,10 +1,36 @@
-let espCount = 0;
+const socket = io('http://localhost:5000');
+
+let totalDevices = 0;
 let ledState = false; // Initial LED state is off
 
 window.onload = function() {
     document.getElementById('toggle-button').onclick = toggleLED;
 };
 
+class device_info {
+    constructor(name, model, last_updated, status) {
+        this.name = name;
+        this.model = model;
+        this.last_updated = last_updated;
+        this.status = status;
+    }
+
+    addDevice() {
+        totalDevices++;
+
+        const template = document.getElementById("device-display-box-template");
+        const container = document.getElementById("device-display-area");
+
+        // Clone just the actual device box element
+        const newCard = template.content.querySelector('.device-display-box').cloneNode(true);
+        newCard.id = this.name;
+        // Add to page (still hidden)
+        container.appendChild(newCard);
+
+        // Animate it after the frame renders
+        animateNewCard(newCard);
+    }
+}
 function animateNewCard(element) {
   gsap.fromTo(element, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.3 });
 }
@@ -14,13 +40,13 @@ function animateRemoveCard(element) {
 }
 
 function addESP32Display() {
-    espCount++;
+    totalDevices++;
 
-    const template = document.getElementById("esp-display-box-template");
-    const container = document.getElementById("esp-display-area");
+    const template = document.getElementById("device-display-box-template");
+    const container = document.getElementById("device-display-area");
 
-    // Clone just the actual ESP box element
-    const newCard = template.content.querySelector('.esp-display-box').cloneNode(true);
+    // Clone just the actual device box element
+    const newCard = template.content.querySelector('.device-display-box').cloneNode(true);
 
     // Add to page (still hidden)
     container.appendChild(newCard);
@@ -32,8 +58,8 @@ function addESP32Display() {
 function removeESP32Display() {
     const element = document.getElementById('dummy');
     if (element) {
-        if (espCount > 0) {
-            espCount--;
+        if (totalDevices > 0) {
+            totalDevices--;
             animateRemoveCard(element);
             element.remove();
         }
@@ -92,8 +118,18 @@ function updateValue() {
         .then(response => response.json())
         .then(data => {
             document.getElementById('display').textContent = "Value: " + data.value;
-            });
+        });
 }
+
+socket.on('device_update', (data) => {
+    const name = document.getElementById(data.device_name);
+    if (name) { /* element id name exists */ 
         
+    }
+    else {
+        
+    }
+});
+
 // Poll every 2 seconds
 setInterval(updateValue, 2000);

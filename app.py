@@ -1,4 +1,4 @@
-from flask import request, render_template, redirect, url_for, flash
+from flask import request, render_template, redirect, url_for, flash, jsonify
 from app_instance import app
 from app_config import run_flask, send_message, MQTT_TOPIC_LED, MQTT_TOPIC_OTA
 from app_users import register, login, logout # needs to be included
@@ -29,7 +29,7 @@ def led_control(state: str):
     elif state == 'off':
         send_message(MQTT_TOPIC_LED, "off")
 
-    return jsonify({"status": result})
+    return jsonify({"status": state})
 
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required

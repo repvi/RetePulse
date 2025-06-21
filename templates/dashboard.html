@@ -9,11 +9,11 @@
     <div class="container">
         <h2>Dashboard</h2>
         <div class="inner-main-card" style="width: 100%; color: snow; display: flex; text-align: center; display: flex; justify-content: center;">
-            <div class="card" id="esp-card">
+            <div class="card" id="device-card">
                 <h3>Connected ESP32s</h3>
             
-                <div class="inner-esp-card">
-                    <div id="esp-display-area"></div>
+                <div class="inner-device-card">
+                    <div id="device-display-area"></div>
                 </div>
 
                 <h3>LED Control</h3>
@@ -38,22 +38,23 @@
         <a href="/logout" style="text-align: center;">Logout</a>
     </div>
 
-    <template id="esp-display-box-template">
-        <div class="esp-display-box" style="font: Ariel; gap: 50px;">
-            <div class="esp-main-info" style="display: flex; justify-content: space-between;">
-                <span id="esp-serial-name" style="font-size: 125%;">esp123</span>
+    <template id="device-display-box-template">
+        <div class="device-display-box" style="font: Ariel; gap: 50px;">
+            <div class="device-main-info" style="display: flex; justify-content: space-between;">
+                <span id="device-serial-name" style="font-size: 125%;">esp123</span>
             </div>
-            <div class="esp-display-sub-info">
+            <div class="device-display-sub-info">
                 <div style="display: flex; justify-content: space-between;">
-                    <span id="esp-model">Model: esp32</span>
-                    <span id="esp-device-status">Status: blanck</span> 
+                    <span id="device-model">Model: esp32</span>
+                    <span id="device-device-status">Status: blanck</span> 
                 </div>
                 <div style="text-align: right;">
-                    <span id="esp-last-updated">Last updated: 12-2-2024</span>
+                    <span id="device-last-updated">Last updated: 12-2-2024</span>
                 </div>
             </div>
         </div>
     </template>
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 </body>
