@@ -6,7 +6,11 @@ window.onload = function() {
 };
 
 function animateNewCard(element) {
-  gsap.fromTo(element, { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.3 });
+  gsap.fromTo(element, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.3 });
+}
+
+function animateRemoveCard(element) {
+    gsap.fromTo(element, { opacity: 1, x: 0 }, { opacity: 1, x: -30, duration: 0.3 });
 }
 
 function addESP32Display() {
@@ -26,11 +30,12 @@ function addESP32Display() {
 }
 
 function removeESP32Display() {
-    const boxToRemove = document.getElementById('dummy');
-    if (boxToRemove) {
+    const element = document.getElementById('dummy');
+    if (element) {
         if (espCount > 0) {
             espCount--;
-            boxToRemove.remove();
+            animateRemoveCard(element);
+            element.remove();
         }
     }
 }
@@ -81,3 +86,14 @@ setInterval(() => {
     const sensorData = Math.random() * 100; // do
     updateSensorData(sensorData);
 }, 400); // update each 400 miliseconds
+
+function updateValue() {
+    fetch('/get_value')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('display').textContent = "Value: " + data.value;
+            });
+}
+        
+// Poll every 2 seconds
+setInterval(updateValue, 2000);

@@ -8,12 +8,12 @@ h2 {
 }
 
 .container { 
-    width: 80%;
+    width: 90%;
     margin: 50px auto;
     padding: 20px;
     background-color: #550010;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    color: #ffffff;
+    color: snow;
     border-radius: 10px;
     display: flex;
     text-align: center;
@@ -22,44 +22,31 @@ h2 {
     align-items: center;
 }
 
-.inner-main-card {
-    width: 80%;
-    color: #ffffff;
-    display: flex;
-    text-align: center;
-    display: flex;
-  justify-content: center; /* center items horizontally */
-}
-
 .card {
-    width: 40%;
+    width: 80%;
     min-height: 600px;
-    float: left;
     margin: 1.5%;
     padding: 20px;
     background-color: #720137;
-    color: #fff;
+    color: snow;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
 }
 
 .esp-display-box {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.4s ease;
-  width: 200px;
-  height: 100px;
   margin: 10px auto;
   padding: 10px;
   border-radius: 10px;
   color: #333;
   background: #f0f0f0;
+  text-align: left;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: fit-content;
 }
 
 .toggle-button {
     background-color: rgba(0, 0, 0, 0.5);
-    color: #ffffff;
+    color: snow;
     padding: 10px;
     border: none;
     cursor: pointer;
@@ -69,7 +56,7 @@ h2 {
 
 .toggle-button.off {
     background-color: rgba(0, 0, 0, 0);
-    color: #ffffff;
+    color: snow;
     padding: 10px;
     border: 2px solid #000000;
     width: 50%;

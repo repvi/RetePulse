@@ -7,18 +7,19 @@ class User(db.Model):
     password_hash = db.Column(db.String(256), nullable=False)
     role_id = db.Column(db.Integer, nullable=False)  # ← your level system: 1=admin, 2=viewer, etc.
 
-    def set_password(self, password):
+    def set_password(self, password: str):
         self.password_hash = generate_password_hash(password)
 
-    def check_password(self, password):
+    def check_password(self, password: str) -> bool:
         return check_password_hash(self.password_hash, password)
 
 class Device(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     model = db.Column(db.String(100), unique=True)
-    is_active = db.Column(db.Boolean, default=True)
+    status = db.Column(db.Integer, default=True)
     last_updated = db.Column(db.DateTime)
+
 
 #    python
 #>>> from app_instance import app

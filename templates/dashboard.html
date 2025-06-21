@@ -8,7 +8,7 @@
 <body>
     <div class="container">
         <h2>Dashboard</h2>
-        <div class="inner-main-card">
+        <div class="inner-main-card" style="width: 100%; color: snow; display: flex; text-align: center; display: flex; justify-content: center;">
             <div class="card" id="esp-card">
                 <h3>Connected ESP32s</h3>
             
@@ -39,8 +39,19 @@
     </div>
 
     <template id="esp-display-box-template">
-        <div class="esp-display-box">
-
+        <div class="esp-display-box" style="font: Ariel; gap: 50px;">
+            <div class="esp-main-info" style="display: flex; justify-content: space-between;">
+                <span id="esp-serial-name" style="font-size: 125%;">esp123</span>
+            </div>
+            <div class="esp-display-sub-info">
+                <div style="display: flex; justify-content: space-between;">
+                    <span id="esp-model">Model: esp32</span>
+                    <span id="esp-device-status">Status: blanck</span> 
+                </div>
+                <div style="text-align: right;">
+                    <span id="esp-last-updated">Last updated: 12-2-2024</span>
+                </div>
+            </div>
         </div>
     </template>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>

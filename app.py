@@ -13,7 +13,7 @@ sensor_data = ""
 def home():
     return redirect(url_for('login'))
 
-def allowed_file(filename):
+def allowed_file(filename: str) -> bool:
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/dashboard')
@@ -23,12 +23,13 @@ def dashboard():
 
 @app.route('/led/<state>')
 @login_required
-def led_control(state):
+def led_control(state: str):
     if state == 'on':
         send_message(MQTT_TOPIC_LED, "on")
     elif state == 'off':
         send_message(MQTT_TOPIC_LED, "off")
-    # return jsonify(success=True)
+
+    return jsonify({"status": result})
 
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
