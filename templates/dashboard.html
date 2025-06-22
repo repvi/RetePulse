@@ -10,7 +10,7 @@
         <h2>Dashboard</h2>
         <div class="inner-main-card" style="width: 100%; color: snow; display: flex; text-align: center; display: flex; justify-content: center;">
             <div class="card" id="device-card">
-                <h3>Connected ESP32s</h3>
+                <h3>Connected Devices</h3>
             
                 <div class="inner-device-card">
                     <div id="device-display-area"></div>
@@ -51,6 +51,25 @@
                 <div style="text-align: right;">
                     <span class="device-last-updated">Last updated: 12-2-2024</span>
                 </div>
+            </div>
+        </div>
+
+        <div class="device-control-area"></div> <!-- leave this section empty -->
+
+        <div class="device-sensor-data">
+            <h3>Sensor Data</h3>
+            <div class="circle-container">
+                <div class="circle">
+                    <div class="progress" id="progress">0%</div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id = device-control-template>
+        <div class="device-control-box">
+            <div class="device-control-button">
+                <button class="toggle-button off" id="toggle-button">LED</button>
             </div>
         </div>
     </template>

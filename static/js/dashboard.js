@@ -25,17 +25,22 @@ function animateRemoveCard(element) {
 }
 
 class DeviceDisplay {
-    constructor(name, model, last_updated, status) {
-        this.name = name;
-        this.model = model;
-        this.last_updated = last_updated;
-        this.status = status;
-    }
+    #name;
+    #model;
+    #last_updated;
+    #status;
 
+    constructor(name, model, last_updated, status) {
+        this.#name = name;
+        this.#model = model;
+        this.#last_updated = last_updated;
+        this.#status = status;
+    }
+    
     displayDevice() {
-        const element = document.getElementById(this.name);
+        const element = document.getElementById(this.#name);
         if (element) { /* element id name exists */ 
-            this.removeDevice(); // Remove the existing device display
+            this.#removeDevice(); // Remove the existing device display
             //this.#updateDeviceDisplay(element);
         }
         else {
@@ -45,22 +50,22 @@ class DeviceDisplay {
 
     #updateSerialNameUI(element) {
         const serial_name = element.querySelector('.device-main-info .device-serial-name');
-        serial_name.textContent = this.name;
+        serial_name.textContent = this.#name;
     }
 
     #updateModelUI(element) {
         const model = element.querySelector('.device-display-sub-info .device-model');
-        model.textContent = this.model;
+        model.textContent = this.#model;
     }
 
     #updateLastUpdatedUI(element) {
         const last_updated = element.querySelector('.device-display-sub-info .device-last-updated');
-        last_updated.textContent = this.last_updated;
+        last_updated.textContent = 'Last updated: ' + this.#last_updated;
     }
 
     #updateStatusUI(element) {
         const status = element.querySelector('.device-display-sub-info .device-device-status');
-        status.textContent = this.status;
+        status.textContent = this.#status;
     }
 
     #updateDeviceDisplay(element) {
@@ -78,7 +83,7 @@ class DeviceDisplay {
 
         // Clone just the actual device box element
         const newCard = template.content.querySelector('.device-display-box').cloneNode(true);
-        newCard.id = this.name; // Set the id to the device name
+        newCard.id = this.#name; // Set the id to the device name
         this.#updateDeviceDisplay(newCard);
         container.appendChild(newCard);
 
@@ -86,8 +91,8 @@ class DeviceDisplay {
         animateNewCard(newCard);
     }
 
-    removeDevice() {
-        const element = document.getElementById(this.name);
+    #removeDevice() {
+        const element = document.getElementById(this.#name);
         if (element) {
             totalDevices--;
             animateRemoveCard(element);
@@ -112,12 +117,8 @@ function toggleLED() {
 function updateButton() {
     const button = document.getElementById('toggle-button');
     button.classList.toggle('off'); /* Toggle the button class to change its appearance */
-    if (ledState) {
-        removeESP32Display();
-    } else {
-        const current_device = new DeviceDisplay('esp_name', 'esp32', '12-3-2024', 'connected');
-        current_device.displayDevice();
-    }
+    const current_device = new DeviceDisplay('esp_name', 'esp32', '12-3-2024', 'connected');
+    current_device.displayDevice();
 }
 
 function updateSensorData(sensorData) {
