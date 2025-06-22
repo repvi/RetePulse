@@ -7,7 +7,24 @@ window.onload = function() {
     document.getElementById('toggle-button').onclick = toggleLED;
 };
 
-class device_info {
+function animateNewCard(element) {
+  gsap.fromTo(element, { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.3 });
+}
+
+function animateRemoveCard(element) {
+    gsap.fromTo(
+        element, 
+        { opacity: 1, x: 0 },
+        { opacity: 0, x: -20, 
+            duration: 0.3, 
+            onComplete: () => {
+                element.remove();
+            } 
+        }
+    );
+}
+
+class DeviceDisplay {
     constructor(name, model, last_updated, status) {
         this.name = name;
         this.model = model;
@@ -15,7 +32,45 @@ class device_info {
         this.status = status;
     }
 
-    addDevice() {
+    displayDevice() {
+        const element = document.getElementById(this.name);
+        if (element) { /* element id name exists */ 
+            this.removeDevice(); // Remove the existing device display
+            //this.#updateDeviceDisplay(element);
+        }
+        else {
+            this.#addDevice();
+        }
+    }
+
+    #updateSerialNameUI(element) {
+        const serial_name = element.querySelector('.device-main-info .device-serial-name');
+        serial_name.textContent = this.name;
+    }
+
+    #updateModelUI(element) {
+        const model = element.querySelector('.device-display-sub-info .device-model');
+        model.textContent = this.model;
+    }
+
+    #updateLastUpdatedUI(element) {
+        const last_updated = element.querySelector('.device-display-sub-info .device-last-updated');
+        last_updated.textContent = this.last_updated;
+    }
+
+    #updateStatusUI(element) {
+        const status = element.querySelector('.device-display-sub-info .device-device-status');
+        status.textContent = this.status;
+    }
+
+    #updateDeviceDisplay(element) {
+        this.#updateSerialNameUI(element);
+        this.#updateModelUI(element);
+        this.#updateLastUpdatedUI(element);
+        this.#updateStatusUI(element);
+    }
+
+    #addDevice() {
         totalDevices++;
 
         const template = document.getElementById("device-display-box-template");
@@ -23,45 +78,19 @@ class device_info {
 
         // Clone just the actual device box element
         const newCard = template.content.querySelector('.device-display-box').cloneNode(true);
-        newCard.id = this.name;
-        // Add to page (still hidden)
+        newCard.id = this.name; // Set the id to the device name
+        this.#updateDeviceDisplay(newCard);
         container.appendChild(newCard);
 
         // Animate it after the frame renders
         animateNewCard(newCard);
     }
-}
-function animateNewCard(element) {
-  gsap.fromTo(element, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.3 });
-}
 
-function animateRemoveCard(element) {
-    gsap.fromTo(element, { opacity: 1, x: 0 }, { opacity: 1, x: -30, duration: 0.3 });
-}
-
-function addESP32Display() {
-    totalDevices++;
-
-    const template = document.getElementById("device-display-box-template");
-    const container = document.getElementById("device-display-area");
-
-    // Clone just the actual device box element
-    const newCard = template.content.querySelector('.device-display-box').cloneNode(true);
-
-    // Add to page (still hidden)
-    container.appendChild(newCard);
-
-    // Animate it after the frame renders
-    animateNewCard(newCard);
-}
-
-function removeESP32Display() {
-    const element = document.getElementById('dummy');
-    if (element) {
-        if (totalDevices > 0) {
+    removeDevice() {
+        const element = document.getElementById(this.name);
+        if (element) {
             totalDevices--;
             animateRemoveCard(element);
-            element.remove();
         }
     }
 }
@@ -82,12 +111,12 @@ function toggleLED() {
 
 function updateButton() {
     const button = document.getElementById('toggle-button');
+    button.classList.toggle('off'); /* Toggle the button class to change its appearance */
     if (ledState) {
         removeESP32Display();
-        button.classList.remove('off');
     } else {
-        addESP32Display();
-        button.classList.add('off');
+        const current_device = new DeviceDisplay('esp_name', 'esp32', '12-3-2024', 'connected');
+        current_device.displayDevice();
     }
 }
 
@@ -104,7 +133,7 @@ function updateSensorData(sensorData) {
     circle.style.backgroundImage = `conic-gradient(
       #9000ff ${percentage * 3.6}deg,
         rgba(0, 0, 0, 0.5) ${percentage * 3.6}deg 360deg
-        )`;
+    )`;
 }
 
 // Simulate updating sensor data (replace with actual sensor data update logic)
@@ -121,15 +150,13 @@ function updateValue() {
         });
 }
 
+/*
 socket.on('device_update', (data) => {
-    const name = document.getElementById(data.device_name);
-    if (name) { /* element id name exists */ 
-        
-    }
-    else {
-        
-    }
+    const current_device = new DeviceDisplay(data.device_name, data.device_model, data.last_updated, data.status);
+    current_device.displayDevice();
 });
-
+*/
 // Poll every 2 seconds
+/*
 setInterval(updateValue, 2000);
+*/

@@ -23,16 +23,11 @@ MQTT_TOPIC_CONNECT = "connect"
 message_queue = queue.Queue()
 
 def device_connection_info(data) -> None:
-    device_name = data['device_name']
-    model = data['device_model']
-    last_updated = data['last_updated']
-    status = 'connected'
-    
     socketio.emit('device_update', {
-        'device_name' : device_name,
-        'device_model' : model,
-        'last_updated' : last_updated,
-        'status' : status
+        'device_name' : data['device_name'],
+        'device_model' :  data['device_model'],
+        'last_updated' :  data['last_updated'],
+        'status' : 'connected'
     })
 
 process_operations = {
@@ -58,10 +53,6 @@ def on_connect(client, userdata, flags, rc) -> None:
 def on_message(client, userdata, msg) -> None:
     global message_queue
     message_queue.put(msg.payload)
-    #global sensor_data
-    #payload_sisze = len(msg.payload)
-    #sensor_data = msg.payload.decode()
-    #print(f"Received message: {sensor_data}")
 
 mqtt_client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION1)
 mqtt_client.on_connect = on_connect
