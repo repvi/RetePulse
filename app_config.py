@@ -27,7 +27,8 @@ def device_connection_info(data) -> None:
         'device_name' : data['device_name'],
         'device_model' :  data['device_model'],
         'last_updated' :  data['last_updated'],
-        'status' : 'connected'
+        'status' : 'connected',
+        'sensor_type' : data['sensor_type']
     })
 
 process_operations = {

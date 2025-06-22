@@ -24,17 +24,70 @@ function animateRemoveCard(element) {
     );
 }
 
+class DeviceSensorBase {
+    constructor() {
+        if (this.constructor === DeviceSensorBase) {
+            throw new Error("Cannot instantiate abstract class DeviceSensorBase");
+        }
+    }
+
+    addDeviceFeatures() {
+        throw new Error("Method 'addDeviceFeatures()' must be implemented.");
+    }
+}
+
+class DeviceDefault extends DeviceSensorBase {
+    constructor() {
+        super();
+    }
+
+    addDeviceFeatures() {
+        // Implement default device features here
+        console.log("Adding default device features");
+    }
+}
+
+class DeviceUART extends DeviceSensorBase {
+    #data;
+    
+    constructor() {
+        super();
+    }
+
+    getData() {
+        return this.#data;
+    }
+    
+    setData(data) {
+        this.#data = data;
+    }
+
+    addDeviceFeatures() {
+        const template = document.getElementById("device-uart-template");
+        const container = document.getElementById("device-sensor-data");
+
+        // Clone just the actual device box element
+        const newCard = template.content.querySelector('.device-display-box').cloneNode(true);
+        container.appendChild(newCard);
+
+        // Animate it after the frame renders
+        animateNewCard(newCard);
+    }
+}
+
 class DeviceDisplay {
     #name;
     #model;
     #last_updated;
     #status;
+    #sensor_type = null; // Default to null, can be set later
 
-    constructor(name, model, last_updated, status) {
+    constructor(name, model, last_updated, status, sensor_type) {
         this.#name = name;
         this.#model = model;
         this.#last_updated = last_updated;
         this.#status = status;
+        this.#sensor_type = sensor_type;
     }
     
     displayDevice() {
@@ -45,6 +98,7 @@ class DeviceDisplay {
         }
         else {
             this.#addDevice();
+            this.#sensor_type.addDeviceFeatures(); // Add device features based on sensor type
         }
     }
 
@@ -82,7 +136,7 @@ class DeviceDisplay {
         const container = document.getElementById("device-display-area");
 
         // Clone just the actual device box element
-        const newCard = template.content.querySelector('.device-display-box').cloneNode(true);
+        const newCard = template.content.querySelector('.device-display').cloneNode(true);
         newCard.id = this.#name; // Set the id to the device name
         this.#updateDeviceDisplay(newCard);
         container.appendChild(newCard);
@@ -121,6 +175,7 @@ function updateButton() {
     current_device.displayDevice();
 }
 
+/*
 function updateSensorData(sensorData) {
     const progress = document.getElementById('progress');
     const circle = document.querySelector('.circle');
@@ -136,6 +191,7 @@ function updateSensorData(sensorData) {
         rgba(0, 0, 0, 0.5) ${percentage * 3.6}deg 360deg
     )`;
 }
+*/
 
 // Simulate updating sensor data (replace with actual sensor data update logic)
 setInterval(() => {
@@ -151,12 +207,23 @@ function updateValue() {
         });
 }
 
-/*
 socket.on('device_update', (data) => {
-    const current_device = new DeviceDisplay(data.device_name, data.device_model, data.last_updated, data.status);
+    device = null;
+    device = new DeviceUART();
+    /*
+    switch (data.sensor_type) {
+        case 'uart':
+            device = new DeviceUART();
+            break;
+        default:
+            device = new DeviceDefault();
+            break;
+    }
+    */
+    const current_device = new DeviceDisplay(data.device_name, data.device_model, data.last_updated, data.status, device);
     current_device.displayDevice();
 });
-*/
+
 // Poll every 2 seconds
 /*
 setInterval(updateValue, 2000);

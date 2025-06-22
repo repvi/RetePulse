@@ -7,30 +7,15 @@
 </head>
 <body>
     <div class="container">
-        <h2>Dashboard</h2>
-        <div class="inner-main-card" style="width: 100%; color: snow; display: flex; text-align: center; display: flex; justify-content: center;">
-            <div class="card" id="device-card">
-                <h3>Connected Devices</h3>
-            
-                <div class="inner-device-card">
-                    <div id="device-display-area"></div>
-                </div>
-
-                <h3>LED Control</h3>
-                <button class="toggle-button off" id="toggle-button">LED</button>
-            </div>
-
-            <div class="card" id="sensor-card">
-                <h3>Sensor Data</h3>
-                <div class="circle-container">
-                    <div class="circle">
-                        <div class="progress" id="progress">0%</div>
-                    </div>
-                </div>
-            </div>
+        <h2 style="display: inline-block; margin-bottom: 5px;">Dashboard</h2>
+        <div class="inner-main-card" style="width: 100%; padding: 20px; box-sizing: border-box; ">
+            <h3 style="text-align: left;">Registered Devices</h3>
+            <div id="device-display-area" style="display: flex; flex-direction: column; align-items: flex-start;"></div>
+            <button class="toggle-button off" id="toggle-button">LED</button>
         </div>
+    </div>
 
-        <div class="clearfix"></div>
+    <div class="wb" style="display: block;">
         <div class="upload">
             <a href="{{ url_for('upload_file') }}">Upload Firmware</a>
         </div>
@@ -39,25 +24,27 @@
     </div>
 
     <template id="device-display-box-template">
-        <div class="device-display-box" style="font: Ariel; gap: 50px;">
-            <div class="device-main-info" style="display: flex; justify-content: space-between;">
-                <span class="device-serial-name" style="font-size: 125%;">esp123</span>
-            </div>
-            <div class="device-display-sub-info">
-                <div style="display: flex; justify-content: space-between;">
-                    <span class="device-model">Model: </span>
-                    <span class="device-device-status">Status: </span> 
+        <div class = "device-display" style="display: flex; align-self: flex;"> <!-- This is the template for each device display box -->
+            <div class="device-display-box">
+                <div class="device-main-info" style="display: flex; justify-content: space-between;">
+                    <span class="device-serial-name" style="font-size: 125%;">esp123</span>
                 </div>
-                <div style="text-align: right;">
-                    <span class="device-last-updated">Last updated: 12-2-2024</span>
+                <div class="device-display-sub-info">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span class="device-model">Model: </span>
+                        <span class="device-device-status">Status: </span> 
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="device-last-updated">Last updated: 12-2-2024</span>
+                    </div>
                 </div>
             </div>
+            <div class="device-control-area"></div> <!-- leave this section empty -->
         </div>
+    </template>
 
-        <div class="device-control-area"></div> <!-- leave this section empty -->
-
+    <template id="device-uart-template">
         <div class="device-sensor-data">
-            <h3>Sensor Data</h3>
             <div class="circle-container">
                 <div class="circle">
                     <div class="progress" id="progress">0%</div>
