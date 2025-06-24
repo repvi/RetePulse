@@ -1,38 +1,82 @@
-body {
+:root {
+    --main-color: #091d35;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
     font-family: Arial, sans-serif;
-    background-color: #550010;
+    background-color: var(--main-color);
+    display: flex;
+    flex-direction: column;
 }
 
 h2 {
     text-align: center;
 }
 
-.container { 
-    position: fixed;
-    top: 0;
+header {
     left: 0;
-    width: 100vw;
-    height: 90%;
-    margin-bottom: 100px;
-    padding-bottom: 20px;
-    background-color: #4a3c3f;
+    top: 0;
     color: snow;
     display: flex;
     flex-direction: column;
 }
 
-.card {
-    min-height: 600px;
-    margin: 1.5%;
-    padding: 20px;
-    background-color: #720137;
+main {
+    --container-background: #0c2543;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    min-height: 650px;
+    padding-bottom: 20px;
+    background-color: var(--container-background);
     color: snow;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+footer {
+    height: 80px;      /* Fixed height */
+    width: 100%;
+    padding: 10px;
+    background-color: var(--container-background);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;    /* Key change: pushes footer to bottom */
+}
+
+.sub-header {
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.container {
+    --container-background: #0c2543;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: auto;
+    min-height: calc(100vh - 200px); /* Subtract footer height */
+    padding-bottom: 20px;
+    background-color: var(--container-background);
+    color: snow;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
 }
 
 .device-display-box {
-    width: 300px;
+    width: 400px;
+    height: 60px;
     font: Ariel; 
     background: #f0f0f0;
     margin: 10px auto;
@@ -41,6 +85,11 @@ h2 {
     color: #333;
     text-align: left;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.device-display-box:hover {
+    transform: scale(1.05);
 }
 
 .toggle-button {
@@ -72,11 +121,15 @@ h2 {
 }
 
 .circle {
+    --circle-margin: 10px;
     width: 150px;
     height: 150px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: radial-gradient(circle, var(--container-background) 60px, rgba(0,0,0,0.5) 61px 100%);
     border-radius: 50%;
     position: relative;
+    margin-left: var(--circle-margin);
+    margin-right: var(--circle-margin);
+    cursor: default;
 }
 
 .circle::after {
@@ -87,8 +140,11 @@ h2 {
     transform: translate(-50%, -50%);
     width: 90%;
     height: 90%;
-    background-color: #550010;
+    background-color: var(--container-background);
+    border-radius: inherit; /* Match parent border-radius */
+    pointer-events: none;
     border-radius: 50%;
+    z-index: 0; /* Keep overlay below content */
 }
 
 .progress {
@@ -98,5 +154,43 @@ h2 {
     transform: translate(-50%, -50%);
     font-size: 24px;
     font-weight: bold;
-    color: #ffffff;
+    color: #fff;
+}
+
+.inner-main-card {
+    --inner-main-card-padding-value: 40px;
+    width: 100%; 
+    padding-left: var(--inner-main-card-padding-value);
+    padding-right: var(--inner-main-card-padding-value);
+    padding-bottom: var(--inner-main-card-padding-value);
+    box-sizing: border-box;
+}
+
+.device-display {
+    --device-display-border: 5px;
+    --device-display-border-color: blue;
+    padding: 20px;
+    display: flex; 
+    align-self: flex;
+    width: calc(100% - var(--inner-main-card-padding-value));
+    border: var(--device-display-border) solid var(--device-display-border-color);
+}
+
+.device-configuration-box {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;  /* or specific width */
+}
+
+.device-sensor-area, 
+.device-control-area {
+    display: flex;
+    justify-content: center;
+}
+
+/* For dynamically inserted elements */
+.device-sensor-area > *,
+.device-control-area > * {
+    /* prevent children from stretching */
+    width: auto;
 }

@@ -87,4 +87,6 @@ def upload_file():
 
 if __name__ == '__main__':
     # Start the Flask app using custom run_flask function
-    run_flask(host='0.0.0.0', port=5000, debug=True)
+    status = run_flask(host='0.0.0.0', port=5000, debug=True)
+    if (status != True):
+        print("Failed to start Flask application.")

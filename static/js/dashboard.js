@@ -1,16 +1,39 @@
+/*
+dashboard.js
+------------
+JavaScript for the MicroUSC-Sentinel dashboard frontend.
+
+Features:
+- Real-time device updates via Socket.IO
+- Dynamic device card creation, update, and removal with animations (GSAP)
+- Device class hierarchy for different sensor types
+- LED control via backend API
+- (Commented) Sensor data visualization and polling
+
+Dependencies:
+- Socket.IO (for real-time updates)
+- GSAP (for animations)
+*/
+
+// Connect to the backend Socket.IO server
 const socket = io('http://localhost:5000');
 
 let totalDevices = 0;
 let ledState = false; // Initial LED state is off
 
+// Set up LED toggle button event handler after DOM loads
 window.onload = function() {
     document.getElementById('toggle-button').onclick = toggleLED;
 };
 
+/* ------------------- Animation Helpers ------------------- */
+
+// Animate the appearance of a new device card
 function animateNewCard(element) {
   gsap.fromTo(element, { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.3 });
 }
 
+// Animate the removal of a device card, then remove it from the DOM
 function animateRemoveCard(element) {
     gsap.fromTo(
         element, 
@@ -24,6 +47,9 @@ function animateRemoveCard(element) {
     );
 }
 
+/* ------------------- Device Sensor Classes ------------------- */
+
+// Abstract base class for device sensor types
 class DeviceSensorBase {
     constructor() {
         if (this.constructor === DeviceSensorBase) {
@@ -31,22 +57,43 @@ class DeviceSensorBase {
         }
     }
 
-    addDeviceFeatures() {
+    addDeviceFeatures(parent) {
         throw new Error("Method 'addDeviceFeatures()' must be implemented.");
+    }
+
+    // Animate adding a sensor feature to the right
+    animateAddRight(element) {
+        gsap.fromTo(element, { opacity: 0, x: 50 }, { opacity: 1, x: 0, duration: 0.3 });
+    }
+
+    // Animate removing a sensor feature to the right, then remove it
+    animateRemoveRight(element) {
+        gsap.fromTo(
+            element, 
+            { opacity: 1, x: 0 },
+            { opacity: 0, x: 50, 
+                duration: 0.3, 
+                onComplete: () => {
+                    element.remove();
+                } 
+            }
+        );
     }
 }
 
+// Default device sensor (no special features)
 class DeviceDefault extends DeviceSensorBase {
     constructor() {
         super();
     }
 
-    addDeviceFeatures() {
+    addDeviceFeatures(parent) {
         // Implement default device features here
         console.log("Adding default device features");
     }
 }
 
+// UART device sensor (example with data handling)
 class DeviceUART extends DeviceSensorBase {
     #data;
     
@@ -62,19 +109,28 @@ class DeviceUART extends DeviceSensorBase {
         this.#data = data;
     }
 
-    addDeviceFeatures() {
+    addDeviceFeatures(parent) {
         const template = document.getElementById("device-uart-template");
-        const container = document.getElementById("device-sensor-data");
 
         // Clone just the actual device box element
-        const newCard = template.content.querySelector('.device-display-box').cloneNode(true);
-        container.appendChild(newCard);
+        const newCard = template.content.querySelector('.device-sensor-data').cloneNode(true);
+        parent.appendChild(newCard);
 
         // Animate it after the frame renders
-        animateNewCard(newCard);
+        this.animateAddRight(newCard);
+    }
+
+    removeDeviceFeatures(parent) {
+        const element = parent.querySelector('.device-sensor-area .device-sensor-data');
+        if (element) {
+            this.animateRemoveRight(element);
+        }
     }
 }
 
+/* ------------------- Device Display Class ------------------- */
+
+// Handles creation, update, and removal of device cards in the dashboard
 class DeviceDisplay {
     #name;
     #model;
@@ -90,15 +146,14 @@ class DeviceDisplay {
         this.#sensor_type = sensor_type;
     }
     
+    // Display or update the device card
     displayDevice() {
         const element = document.getElementById(this.#name);
         if (element) { /* element id name exists */ 
             this.#removeDevice(); // Remove the existing device display
-            //this.#updateDeviceDisplay(element);
         }
         else {
             this.#addDevice();
-            this.#sensor_type.addDeviceFeatures(); // Add device features based on sensor type
         }
     }
 
@@ -129,6 +184,10 @@ class DeviceDisplay {
         this.#updateStatusUI(element);
     }
 
+    #getSensorArea(parent) {
+        return parent.querySelector(".device-sensor-area");
+    }
+    
     #addDevice() {
         totalDevices++;
 
@@ -138,6 +197,9 @@ class DeviceDisplay {
         // Clone just the actual device box element
         const newCard = template.content.querySelector('.device-display').cloneNode(true);
         newCard.id = this.#name; // Set the id to the device name
+        const sensor_area = this.#getSensorArea(newCard);
+        this.#sensor_type.addDeviceFeatures(sensor_area); // Add device features based on sensor type
+        
         this.#updateDeviceDisplay(newCard);
         container.appendChild(newCard);
 
@@ -149,6 +211,7 @@ class DeviceDisplay {
         const element = document.getElementById(this.#name);
         if (element) {
             totalDevices--;
+            this.#sensor_type.removeDeviceFeatures(element);
             animateRemoveCard(element);
         }
     }
@@ -171,7 +234,7 @@ function toggleLED() {
 function updateButton() {
     const button = document.getElementById('toggle-button');
     button.classList.toggle('off'); /* Toggle the button class to change its appearance */
-    const current_device = new DeviceDisplay('esp_name', 'esp32', '12-3-2024', 'connected');
+    const current_device = new DeviceDisplay('esp_name', 'esp32', '12-3-2024', 'connected', new DeviceUART());
     current_device.displayDevice();
 }
 
@@ -210,7 +273,6 @@ function updateValue() {
 socket.on('device_update', (data) => {
     device = null;
     device = new DeviceUART();
-    /*
     switch (data.sensor_type) {
         case 'uart':
             device = new DeviceUART();
@@ -219,7 +281,7 @@ socket.on('device_update', (data) => {
             device = new DeviceDefault();
             break;
     }
-    */
+
     const current_device = new DeviceDisplay(data.device_name, data.device_model, data.last_updated, data.status, device);
     current_device.displayDevice();
 });

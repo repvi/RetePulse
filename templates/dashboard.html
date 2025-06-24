@@ -6,26 +6,40 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h2 style="display: inline-block; margin-bottom: 5px;">Dashboard</h2>
-        <div class="inner-main-card" style="width: 100%; padding: 20px; box-sizing: border-box; ">
-            <h3 style="text-align: left;">Registered Devices</h3>
-            <div id="device-display-area" style="display: flex; flex-direction: column; align-items: flex-start;"></div>
-            <button class="toggle-button off" id="toggle-button">LED</button>
+    <header>
+        
+    </header>
+
+    <main>
+        <div class="container">
+            <h2 style="display: inline-block; margin-bottom: 5px;">Dashboard</h2>
+            <div class="inner-main-card">
+                <h3 style="text-align: left;">Registered Devices</h3>
+                <div id="device-display-area" style="display: flex; flex-direction: column; align-items: flex-start;"></div>
+                <button class="toggle-button off" id="toggle-button">LED</button>
+            </div>
         </div>
 
-        <div>
+        <div class="bottom-container">
             <div class="upload" style="margin: 10px; text-align: center;">
                 <a href="{{ url_for('upload_file') }}">Upload Firmware</a>
             </div>
-            <div class="lodgout" style="margin: 10px; text-align: center;">
+            <div class="logout" style="margin: 10px; text-align: center;">
                 <a href="/logout" style="text-align: center;">Logout</a>
             </div>
         </div>
-    </div>
+    </main>
+
+    <!-- 
+    <footer>
+        <div class="footer-content" style="text-align: center;">
+            <p>&copy; 2024 Revint. All rights reserved.</p>
+        </div>
+    </footer>
+    -->
 
     <template id="device-display-box-template">
-        <div class = "device-display" style="display: flex; align-self: flex;"> <!-- This is the template for each device display box -->
+        <div class="device-display"> <!-- This is the template for each device display box -->
             <div class="device-display-box">
                 <div class="device-main-info" style="display: flex; justify-content: space-between;">
                     <span class="device-serial-name" style="font-size: 125%;">esp123</span>
@@ -40,7 +54,11 @@
                     </div>
                 </div>
             </div>
-            <div class="device-control-area"></div> <!-- leave this section empty -->
+
+            <div class="device-configuration-box">
+                <div class="device-sensor-area"></div>
+                <div class="device-control-area"></div> <!-- leave this section empty -->
+            </div>
         </div>
     </template>
 
