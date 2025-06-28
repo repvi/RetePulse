@@ -222,7 +222,6 @@ function toggleLED() {
     fetch(`/led/${command}`)
         .then(response => response.text())
         .then(data => {
-            console.log(data);
             ledState = !ledState; // Toggle the state
             updateButton();
         })
