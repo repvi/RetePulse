@@ -117,26 +117,32 @@ def start_mqtt_client() -> bool:
     Connects to the broker and sets up callbacks.
     """
     global mqtt_client
-    mqtt_client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION1)
-    mqtt_client.on_connect = on_connect
-    mqtt_client.on_message = on_message
-    
-    status = mqtt_client.connect(MQTT_BROKER, 1883, 60)
-    if status != mqtt.MQTT_ERR_SUCCESS:
-        print(f"Failed to connect to MQTT broker: {status}")
-        return False
-    
-    status = mqtt_client.loop_start()
-    if status != mqtt.MQTT_ERR_SUCCESS:
-        print(f"Failed to start MQTT loop: {status}")
-        return False
-    
-    if not mqtt_client.is_connected():
-        print("MQTT client is not connected.")
-        return False
-    
-    return True
+    try:
+        mqtt_client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION1)
+        mqtt_client.on_connect = on_connect
+        mqtt_client.on_message = on_message
 
+        retry_count = 5
+        for attempt in range(retry_count):
+            print(f"Attempting to connect to MQTT broker (Attempt {attempt + 1}/{retry_count})")
+            status = mqtt_client.connect(MQTT_BROKER, 1883, 60)
+            if status == mqtt.MQTT_ERR_SUCCESS:
+                status = mqtt_client.loop_start()
+                if status == mqtt.MQTT_ERR_SUCCESS:
+                    import time
+                    time.sleep(1)
+
+                    if mqtt_client.is_connected():
+                        print("MQTT client connected successfully.")
+                        return True
+            print(f"Connection attempt {attempt + 1} failed. Retrying...")
+            time.sleep(2)  # Wait before retrying
+        print("Failed to connect to MQTT broker after multiple attempts.")
+        return False
+    except Exception as e:
+        print(f"Error starting MQTT client: {e}")
+        return False
+    
 # Start background thread for processing MQTT messages
 processing_thread = threading.Thread(target=process_messages, daemon=True)
 processing_thread.start()
@@ -155,6 +161,12 @@ def run_flask(host, port, debug) -> bool:
     - On Linux: runs Flask directly if debug, otherwise starts in a separate process.
     Returns True if started successfully, False otherwise.
     """
+    if not start_mqtt_client():
+        print("Failed to start MQTT client.")
+        return False
+    else:
+        send_message("test/startup", "Flask server starting")
+    
     current_os = platform.system()
     if current_os == "Windows":
         app.run(host=host, port=port, debug=debug)
@@ -167,4 +179,4 @@ def run_flask(host, port, debug) -> bool:
     else:
         return False
     
-    return start_mqtt_client()
+    return True
