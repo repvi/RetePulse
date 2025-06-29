@@ -256,6 +256,7 @@ function updateSensorData(sensorData) {
 */
 
 // Simulate updating sensor data (replace with actual sensor data update logic)
+/*
 setInterval(() => {
     const sensorData = Math.random() * 100; // do
     updateSensorData(sensorData);
@@ -268,13 +269,14 @@ function updateValue() {
             document.getElementById('display').textContent = "Value: " + data.value;
         });
 }
+*/
 
 socket.on('device_update', (data) => {
     device = null;
-    device = new DeviceUART();
     switch (data.sensor_type) {
         case 'uart':
             device = new DeviceUART();
+            console.log("UART device detected");
             break;
         default:
             device = new DeviceDefault();

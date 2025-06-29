@@ -26,6 +26,8 @@ import json
 import threading
 from flask_socketio import SocketIO, emit
 
+current_os = platform.system()
+
 # Initialize Flask-SocketIO for real-time communication
 socketio = SocketIO(app, cors_allowed_origins="*")  # Allow all origins for dev
 
@@ -34,8 +36,13 @@ fallback = lambda *args: "Invalid"
 
 # Configuration constants
 CONFIG_DEBUG = True
-MQTT_BROKER = "test.mosquitto.org" # for windows
-# MQTT_BROKER = "localhost" # for linux
+
+MQTT_BROKER = None
+if current_os == "Windows":
+    MQTT_BROKER = "test.mosquitto.org" # for windows
+elif current_os == "Linux":
+    MQTT_BROKER = "localhost" # for linux
+
 MQTT_TOPIC_LED = "led"
 MQTT_TOPIC_OTA = "ota"
 MQTT_TOPIC_SENSOR = "sensor"
@@ -58,6 +65,14 @@ def device_connection_info(data) -> None:
     Emit device connection info to all connected SocketIO clients.
     Used when a device connects and sends its info.
     """
+    if CONFIG_DEBUG:
+        print(f"Device connection info received: {data}")
+        print(f"Emitting device update to SocketIO: {data['device_name']}")
+        print(f"Device model: {data['device_model']}")
+        print(f"Device last updated: {data['last_updated']}")
+        print(f"Device status: connected")
+        print(f"sensor type: {data['sensor_type']}")
+
     socketio.emit('device_update', {
         'device_name' : data['device_name'],
         'device_model' :  data['device_model'],
@@ -95,6 +110,7 @@ def on_connect(client, userdata, flags, rc) -> None:
     client_id = client._client_id.decode()
     print(f"Device {client_id} connected with result code {rc}")
     client.subscribe(MQTT_TOPIC_SENSOR + f"/{client_id}")
+    client.subscribe(MQTT_TOPIC_SET_DEVICE)
 
 def on_message(client, userdata, msg) -> None:
     """
@@ -122,7 +138,7 @@ def start_mqtt_client() -> bool:
         mqtt_client.on_connect = on_connect
         mqtt_client.on_message = on_message
 
-        retry_count = 5
+        retry_count = 3
         for attempt in range(retry_count):
             print(f"Attempting to connect to MQTT broker (Attempt {attempt + 1}/{retry_count})")
             status = mqtt_client.connect(MQTT_BROKER, 1883, 60)
@@ -165,9 +181,10 @@ def run_flask(host, port, debug) -> bool:
         print("Failed to start MQTT client.")
         return False
     else:
-        send_message("test/startup", "Flask server starting")
+        print(f"MQTT broker IP address: {MQTT_BROKER}")
+        print("Flask server starting")
     
-    current_os = platform.system()
+    global current_os
     if current_os == "Windows":
         app.run(host=host, port=port, debug=debug)
     elif current_os == "Linux":
