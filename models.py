@@ -15,11 +15,11 @@ class User(db.Model):
 
 class Device(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    model = db.Column(db.String(100), unique=True)
-    status = db.Column(db.Integer, default=True)
-    last_updated = db.Column(db.DateTime)
-
+    name = db.Column(db.String(30), nullable=False)
+    model = db.Column(db.String(25), nullable=False)
+    status = db.Column(db.String(20), nullable=False)
+    sensor_type = db.Column(db.String(20), nullable=False)
+    last_updated = db.Column(db.String(15), nullable=False)
 
 #    python
 #>>> from app_instance import app
@@ -27,3 +27,5 @@ class Device(db.Model):
 #>>> from models import Device
 #>>> with app.app_context():
 #...     db.create_all()
+
+#     Device.__table__.drop(db.engine)

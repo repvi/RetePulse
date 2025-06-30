@@ -18,6 +18,9 @@ Dependencies:
 
 from typing import Optional
 from app_instance import app
+from extensions import db
+from models import Device
+from sqlalchemy import select, func
 import paho.mqtt.client as mqtt
 from multiprocessing import Process
 import platform
@@ -65,21 +68,47 @@ def device_connection_info(data) -> None:
     Emit device connection info to all connected SocketIO clients.
     Used when a device connects and sends its info.
     """
-    if CONFIG_DEBUG:
-        print(f"Device connection info received: {data}")
-        print(f"Emitting device update to SocketIO: {data['device_name']}")
-        print(f"Device model: {data['device_model']}")
-        print(f"Device last updated: {data['last_updated']}")
-        print(f"Device status: connected")
-        print(f"sensor type: {data['sensor_type']}")
+    with app.app_context():
+        try:
+            device_name = data['device_name']
+            device_model = data['device_model']
+            status = 'connected'
+            sensor_type = data['sensor_type']
+            last_updated = data['last_updated']
+            # Use modern select pattern
+            stmt = select(Device).where(Device.name == device_name)
+            existing_device = db.session.execute(stmt).scalar_one_or_none()
 
-    socketio.emit('device_update', {
-        'device_name' : data['device_name'],
-        'device_model' :  data['device_model'],
-        'last_updated' :  data['last_updated'],
-        'status' : 'connected',
-        'sensor_type' : data['sensor_type']
-    })
+            if existing_device:
+                existing_device.name = device_name
+                existing_device.model = device_model
+                existing_device.status = status
+                existing_device.sensor_type = sensor_type
+                existing_device.last_updated = last_updated
+            else:
+                new_device = Device(
+                    name=device_name,
+                    model=device_model,
+                    status=status,
+                    sensor_type=sensor_type,
+                    last_updated=last_updated
+                )
+                db.session.add(new_device)
+
+            db.session.commit()
+
+            # Emit update after successful database operation
+            socketio.emit('device_update', {
+                'device_name': device_name,
+                'device_model': device_model,
+                'last_updated': last_updated,
+                'status': status,
+                'sensor_type': sensor_type
+            })
+
+        except Exception as e:
+            print(f"Database error in device_connection_info: {str(e)}")
+            db.session.rollback()
 
 def device_sensor_data(data) -> None:
     pass

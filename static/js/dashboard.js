@@ -21,6 +21,38 @@ const socket = io('http://localhost:5000');
 let totalDevices = 0;
 let ledState = false; // Initial LED state is off
 
+let deviceArray = []; // To keep track of devices
+
+fetch('/load/devices', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        devices: Array.from(deviceArray)
+    })
+})
+.then(response => response.json())
+.then(data => {
+    // Handle the response data
+    if (data.deviceList) {
+        data.deviceList.forEach(element => {
+            deviceArray.push(element);
+        });
+        console.log("Device list loaded:", deviceArray);
+    }
+
+    deviceArray.forEach(device => {
+        const deviceType = getDeviceType(device);
+        const current_device = new DeviceDisplay(device.name, device.model, device.last_updated, device.status, deviceType);
+        current_device.displayDevice();
+    });
+    console.log(data);
+})
+.catch(error => {
+    console.error('Error fetching device data:', error);
+});
+
 // Set up LED toggle button event handler after DOM loads
 window.onload = function() {
     document.getElementById('toggle-button').onclick = toggleLED;
@@ -150,7 +182,8 @@ class DeviceDisplay {
     displayDevice() {
         const element = document.getElementById(this.#name);
         if (element) { /* element id name exists */ 
-            this.#removeDevice(); // Remove the existing device display
+            this.#updateDeviceDisplay(element);
+            //this.#removeDevice(); // Remove the existing device display
         }
         else {
             this.#addDevice();
@@ -271,17 +304,17 @@ function updateValue() {
 }
 */
 
-socket.on('device_update', (data) => {
-    device = null;
+function getDeviceType(data) {
     switch (data.sensor_type) {
         case 'uart':
-            device = new DeviceUART();
-            console.log("UART device detected");
-            break;
+            return new DeviceUART();
         default:
-            device = new DeviceDefault();
-            break;
+            return new DeviceDefault();
     }
+}
+
+socket.on('device_update', (data) => {
+    device = getDeviceType(data);
 
     const current_device = new DeviceDisplay(data.device_name, data.device_model, data.last_updated, data.status, device);
     current_device.displayDevice();

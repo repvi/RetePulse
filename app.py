@@ -11,7 +11,10 @@ Features:
 """
 
 from flask import request, render_template, redirect, url_for, flash, jsonify
+from sqlalchemy import select, func
 from app_instance import app
+from extensions import db
+from models import Device
 from app_config import run_flask, send_message, MQTT_TOPIC_LED, MQTT_TOPIC_OTA
 from app_users import register, login, logout # needs to be included
 from werkzeug.utils import secure_filename
@@ -36,6 +39,43 @@ def allowed_file(filename: str) -> bool:
     """
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+@app.route('/load/devices', methods=['POST'])
+@login_required
+def load_devices():
+    """
+    Load and return device list from database.
+    Uses application context to ensure proper database access.
+    """
+    with app.app_context():
+        try:
+            # Get JSON data from request within context
+            data = request.get_json()
+            device_list = data.get('devices', [])
+
+            # Database operations
+            stmt = select(func.count()).select_from(Device)
+            device_count = db.session.execute(stmt).scalar()
+            devices = db.session.execute(select(Device)).scalars().all()
+
+            # Compare counts
+            if len(device_list) == device_count:
+                return jsonify({"deviceList": None})
+
+            # Build refresh list
+            refresh_devices = [{
+                'name': device.name,
+                'model': device.model,
+                'status': device.status,
+                'sensor_type': device.sensor_type,
+                'last_updated': device.last_updated
+            } for device in devices]
+
+            return jsonify({"deviceList": refresh_devices})
+
+        except Exception as e:
+            print(f"Database error: {str(e)}")
+            return jsonify({"error": str(e)}), 500
+
 @app.route('/dashboard')
 @login_required
 def dashboard():
@@ -44,7 +84,7 @@ def dashboard():
     Requires user to be logged in.
     Passes sensor_data to the template.
     """
-    return render_template('dashboard.html', sensor_data=sensor_data)
+    return render_template('dashboard.html')
 
 @app.route('/led/<state>')
 @login_required
