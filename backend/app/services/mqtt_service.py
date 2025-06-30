@@ -1,44 +1,17 @@
-"""
-app_config.py
--------------
-Configuration and utility functions for the MicroUSC-Sentinel Flask application.
-
-Features:
-- MQTT client setup and message handling
-- Device connection info broadcasting via Flask-SocketIO
-- Message processing in a background thread
-- Utility functions for sending MQTT messages and running Flask
-
-Dependencies:
-- Flask app instance from app_instance.py
-- paho-mqtt for MQTT communication
-- Flask-SocketIO for real-time updates to frontend
-- threading, multiprocessing, queue, json, platform
-"""
-
-from typing import Optional
-from app_instance import app
-from extensions import db
-from models import Device
-from sqlalchemy import select, func
 import paho.mqtt.client as mqtt
-from multiprocessing import Process
+from ..extensions import db, socketio, app
+from sqlalchemy import select
+from models import Device
+import threading
+from typing import Optional
 import platform
 import queue
 import json
-import threading
-from flask_socketio import SocketIO, emit
 
 current_os = platform.system()
 
-# Initialize Flask-SocketIO for real-time communication
-socketio = SocketIO(app, cors_allowed_origins="*")  # Allow all origins for dev
-
 # Fallback function for unrecognized MQTT topics
 fallback = lambda *args: "Invalid"
-
-# Configuration constants
-CONFIG_DEBUG = True
 
 MQTT_BROKER = None
 if current_os == "Windows":
@@ -155,6 +128,17 @@ def on_message(client, userdata, msg) -> None:
     message_queue.put(message_data)
 
 # Set up MQTT client and callbacks
+    
+# Start background thread for processing MQTT messages
+processing_thread = threading.Thread(target=process_messages, daemon=True)
+processing_thread.start()
+
+def send_message(topic: str, message: str) -> None:
+    """
+    Publish a message to the specified MQTT topic.
+    """
+    global mqtt_client
+    mqtt_client.publish(topic, message)
 
 def start_mqtt_client() -> bool:
     """
@@ -187,44 +171,3 @@ def start_mqtt_client() -> bool:
     except Exception as e:
         print(f"Error starting MQTT client: {e}")
         return False
-    
-# Start background thread for processing MQTT messages
-processing_thread = threading.Thread(target=process_messages, daemon=True)
-processing_thread.start()
-
-def send_message(topic: str, message: str) -> None:
-    """
-    Publish a message to the specified MQTT topic.
-    """
-    global mqtt_client
-    mqtt_client.publish(topic, message)
-
-def run_flask(host, port, debug) -> bool:
-    """
-    Start the Flask application.
-    - On Windows: runs Flask directly.
-    - On Linux: runs Flask directly if debug, otherwise starts in a separate process.
-    Returns True if started successfully, False otherwise.
-    """
-    """
-    if not start_mqtt_client():
-        print("Failed to start MQTT client.")
-        return False
-    else:
-        print(f"MQTT broker IP address: {MQTT_BROKER}")
-        print("Flask server starting")
-    """
-    
-    global current_os
-    if current_os == "Windows":
-        app.run(host=host, port=port, debug=debug)
-    elif current_os == "Linux":
-        if CONFIG_DEBUG is True:
-            app.run(host=host, port=port, debug=debug)
-        else:
-            frontend_process = Process(target=run_flask, args=(host, port, debug))
-            frontend_process.start()
-    else:
-        return False
-    
-    return True

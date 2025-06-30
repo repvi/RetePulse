@@ -1,8 +1,8 @@
 from flask import session, request, redirect, url_for, render_template, flash
-from app_instance import app
+from backend.app.app_instance import app
 from extensions import db
-from models import User
-from auth_utils import login_required
+from app.models.models import User
+from backend.app.utils.auth_utils import login_required
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

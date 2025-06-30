@@ -1,4 +1,4 @@
-from backend.app_instance import app
+from backend.app.app_instance import app
 from backend.extensions import db
 
 with app.app_context():
@@ -6,9 +6,9 @@ with app.app_context():
     db.create_all()
 
 
-from backend.app_instance import app
+from backend.app.app_instance import app
 from backend.extensions import db
-from backend.models import User, Device
+from backend.app.models.models import User, Device
 
 with app.app_context():
     db.create_all()
