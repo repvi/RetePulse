@@ -1,10 +1,16 @@
-from flask import session, request, redirect, url_for, render_template, flash
-from backend.app.app_instance import app
-from extensions import db
+from flask import Blueprint, session, request, redirect, url_for, render_template, flash
+from ..extensions import db
 from app.models.models import User
-from backend.app.utils.auth_utils import login_required
+from ..utils.auth_utils import login_required
 
-@app.route('/register', methods=['GET', 'POST'])
+auth_bp = Blueprint('auth', __name__)
+
+@auth_bp.route('/')
+def home():
+    """Redirect root URL to login page."""
+    return redirect(url_for('auth.login'))
+
+@auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form['username']
@@ -23,11 +29,11 @@ def register():
         db.session.commit()
 
         flash('Registration successful! Please log in.')
-        return redirect(url_for('login'))
+        return redirect(url_for('auth.login'))
 
     return render_template('register.html')
 
-@app.route('/login', methods=['GET', 'POST'])
+@auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
@@ -47,7 +53,7 @@ def login():
 
     return render_template('login.html')
 
-@app.route('/logout')
+@auth_bp.route('/logout')
 @login_required
 def logout():
     session.pop('user_id', None)  # Remove user from session if logged in

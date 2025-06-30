@@ -1,4 +1,4 @@
-from backend.app.app_instance import app
+from .app_instance import app
 from multiprocessing import Process
 import platform
 

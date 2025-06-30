@@ -1,17 +1,14 @@
 from flask import request, render_template, redirect, url_for, flash, jsonify
 from sqlalchemy import select, func
-from backend.app.app_instance import app
+from .app_instance import app
 from .extensions import db
-from models import Device
-from backend.config import run_flask, send_message, MQTT_TOPIC_LED, MQTT_TOPIC_OTA
-from backend.app.utils.auth_utils import login_required
+from .models.models import Device
+from .config import run_flask
+from .services.mqtt_service import send_message, MQTT_TOPIC_LED
+from .services.ota import MQTT_TOPIC_OTA
+from .utils.auth_utils import login_required
 
-# Placeholder for sensor data (can be updated elsewhere)
-
-@app.route('/')
-def home():
-    """Redirect root URL to login page."""
-    return redirect(url_for('login'))
+# Placeholder for sensor data (can be updated elsewhere
 
 @app.route('/load/devices', methods=['POST'])
 @login_required
@@ -49,16 +46,6 @@ def load_devices():
         except Exception as e:
             print(f"Database error: {str(e)}")
             return jsonify({"error": str(e)}), 500
-
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    """
-    Render the dashboard page.
-    Requires user to be logged in.
-    Passes sensor_data to the template.
-    """
-    return render_template('dashboard.html')
 
 @app.route('/led/<state>')
 @login_required

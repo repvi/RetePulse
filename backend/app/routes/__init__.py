@@ -1,1 +1,2 @@
-from .app_users import register, login, logout
+from .auth import register, login, logout, auth_bp
+from .dashboard import dashboard_bp

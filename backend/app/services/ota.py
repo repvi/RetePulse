@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-from ..extensions import app
+from ..app_instance import app
 from ..utils.auth_utils import login_required
 from .mqtt_service import send_message, MQTT_TOPIC_OTA
 
