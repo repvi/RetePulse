@@ -206,12 +206,14 @@ def run_flask(host, port, debug) -> bool:
     - On Linux: runs Flask directly if debug, otherwise starts in a separate process.
     Returns True if started successfully, False otherwise.
     """
+    """
     if not start_mqtt_client():
         print("Failed to start MQTT client.")
         return False
     else:
         print(f"MQTT broker IP address: {MQTT_BROKER}")
         print("Flask server starting")
+    """
     
     global current_os
     if current_os == "Windows":
