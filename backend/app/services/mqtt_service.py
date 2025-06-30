@@ -1,6 +1,7 @@
-import paho.mqtt.client as mqtt
 from ..extensions import db, socketio
+from ..app_instance import app
 from ..models.models import Device
+import paho.mqtt.client as mqtt
 from sqlalchemy import select
 import threading
 from typing import Optional

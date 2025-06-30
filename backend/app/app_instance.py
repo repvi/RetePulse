@@ -1,8 +1,10 @@
 from flask import Flask
+from flask_cors import CORS
 from .extensions import db, socketio, SocketIO
 from .routes import auth_bp, dashboard_bp
 
 app = Flask(__name__)
+CORS(app, resources={r"\*" : {"origins" : "http://localhost:3000"}})  # Enable CORS for all routes
 app.secret_key = 'supersecretkey'  # Needed for flash messages
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # or use PostgreSQL/MySQL URI
