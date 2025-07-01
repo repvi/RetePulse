@@ -1,0 +1,62 @@
+:root {
+    --container-background: #0c2543;
+}
+.device-serial-name {
+    font-size: 125%;
+}
+
+.device-display-box {
+    width: 400px;
+    height: 60px;
+    font: Ariel; 
+    background: #f0f0f0;
+    margin: 10px auto;
+    padding: 10px;
+    border-radius: 10px;
+    color: #333;
+    text-align: left;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.device-display-box:hover {
+    transform: scale(1.05);
+}
+
+.inner-main-card {
+    --inner-main-card-padding-value: 40px;
+    width: 100%; 
+    padding-left: var(--inner-main-card-padding-value);
+    padding-right: var(--inner-main-card-padding-value);
+    padding-bottom: var(--inner-main-card-padding-value);
+    box-sizing: border-box;
+}
+
+.device-display {
+    --device-display-border: 5px;
+    --device-display-border-color: blue;
+    padding: 20px;
+    display: flex; 
+    align-self: flex;
+    width: calc(100% - var(--inner-main-card-padding-value));
+    border: var(--device-display-border) solid var(--device-display-border-color);
+}
+
+.device-configuration-box {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;  /* or specific width */
+}
+
+.device-sensor-area, 
+.device-control-area {
+    display: flex;
+    justify-content: center;
+}
+
+/* For dynamically inserted elements */
+.device-sensor-area > *,
+.device-control-area > * {
+    /* prevent children from stretching */
+    width: auto;
+}

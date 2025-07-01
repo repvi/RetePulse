@@ -1,0 +1,43 @@
+
+.circle-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.circle {
+    --circle-margin: 10px;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, var(--container-background) 60px, rgba(0,0,0,0.5) 61px 100%);
+    border-radius: 50%;
+    position: relative;
+    margin-left: var(--circle-margin);
+    margin-right: var(--circle-margin);
+    cursor: default;
+}
+
+.circle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    height: 90%;
+    background-color: var(--container-background);
+    border-radius: inherit; /* Match parent border-radius */
+    pointer-events: none;
+    border-radius: 50%;
+    z-index: 0; /* Keep overlay below content */
+}
+
+.progress {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+}

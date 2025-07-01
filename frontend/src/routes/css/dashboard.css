@@ -1,0 +1,97 @@
+:root {
+    --main-color: #091d35;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background-color: var(--main-color);
+    display: flex;
+    flex-direction: column;
+}
+
+h2 {
+    text-align: center;
+}
+
+header {
+    left: 0;
+    top: 0;
+    color: snow;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    --container-background: #0c2543;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    min-height: 650px;
+    padding-bottom: 20px;
+    background-color: var(--container-background);
+    color: snow;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+footer {
+    height: 80px;      /* Fixed height */
+    width: 100%;
+    padding: 10px;
+    background-color: var(--container-background);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;    /* Key change: pushes footer to bottom */
+}
+
+.sub-header {
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.container {
+    --container-background: #0c2543;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: auto;
+    min-height: calc(100vh - 200px); /* Subtract footer height */
+    padding-bottom: 20px;
+    background-color: var(--container-background);
+    color: snow;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+.toggle-button {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: snow;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    border: 2px solid #000000;
+    width: 50%;
+}
+
+.toggle-button.off {
+    background-color: rgba(0, 0, 0, 0);
+    color: snow;
+    padding: 10px;
+    border: 2px solid #000000;
+    width: 50%;
+}
+
+.clearfix {
+    clear: both;
+}
