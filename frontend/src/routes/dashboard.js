@@ -63,6 +63,7 @@ export default function Dashboard() {
   );
 }
 
+/*
 // Connect to the backend Socket.IO server
 const socket = io('http://localhost:5000');
 
@@ -103,8 +104,6 @@ window.onload = function() {
     document.getElementById('toggle-button').onclick = toggleLED;
 };
 
-/* ------------------- Animation Helpers ------------------- */
-
 // Animate the appearance of a new device card
 function animateNewCard(element) {
   gsap.fromTo(element, { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.3 });
@@ -125,7 +124,6 @@ function animateRemoveCard(element) {
 }
 
 
-/* ------------------- Device Display Class ------------------- */
 
 // Handles creation, update, and removal of device cards in the dashboard
 
@@ -145,12 +143,12 @@ function toggleLED() {
 
 function updateButton() {
     const button = document.getElementById('toggle-button');
-    button.classList.toggle('off'); /* Toggle the button class to change its appearance */
+    button.classList.toggle('off');
     const current_device = new DeviceDisplay('esp_name', 'esp32', '12-3-2024', 'connected', new DeviceUART());
     current_device.displayDevice();
 }
 
-/*
+
 function updateSensorData(sensorData) {
     const progress = document.getElementById('progress');
     const circle = document.querySelector('.circle');
@@ -166,10 +164,10 @@ function updateSensorData(sensorData) {
         rgba(0, 0, 0, 0.5) ${percentage * 3.6}deg 360deg
     )`;
 }
-*/
+
 
 // Simulate updating sensor data (replace with actual sensor data update logic)
-/*
+
 setInterval(() => {
     const sensorData = Math.random() * 100; // do
     updateSensorData(sensorData);
@@ -182,7 +180,7 @@ function updateValue() {
             document.getElementById('display').textContent = "Value: " + data.value;
         });
 }
-*/
+
 
 socket.on('device_update', (data) => {
     device = getDeviceType(data);
@@ -192,6 +190,6 @@ socket.on('device_update', (data) => {
 });
 
 // Poll every 2 seconds
-/*
+
 setInterval(updateValue, 2000);
 */

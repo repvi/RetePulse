@@ -1,0 +1,14 @@
+.container {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    flex-direction: column; /* Stack elements vertically */
+    width: 300px;
+    height: 400px;
+    margin: 100px auto;
+    padding: 20px; /* Extra space in the box */
+    background-color: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    border: #000c17 2px solid;
+    border-radius: 10px;
+}
