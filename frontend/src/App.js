@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './App.css';
-import Dashboard from './routes/dashboard';
-import Login from './routes/login';
-import Register from './routes/register';
+import Dashboard      from './routes/dashboard';
+import Login          from './routes/login';
+import Register       from './routes/register';
 import UploadFirmware from './routes/upload';
 
 function App() {

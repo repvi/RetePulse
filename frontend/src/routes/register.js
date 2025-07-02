@@ -1,29 +1,40 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'
 import './css/register.css'; // Adjust the path as needed
+import { getRegisterAPI } from '../api/flask/flaskapi'; // Adjust the import path as needed
+import styles from './modules/register.module.css'; // Adjust the path as needed
 
 export default function Register() {
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-    user_role: '2' // Default to "Viewer"
-  });
+  const [formData, setFormData] = useState({username: '', password: '', user_role: '2' /* Default to "Viewer" */});
+  const [error, setError]       = useState('');
+  const navigate                = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+   const handleChange = e => {
+    setFormData(f => ({ ...f, [e.target.name]: e.target.value, user_role: f.user_role }))
+  }
 
-  const handleSubmit = (e) => {
+  const handleRoleChange = e => {
+    setFormData(f => ({ ...f, user_role: e.target.value }));
+  }
+
+  const handleSubmit =  async (e) => {
     e.preventDefault();
-    // Replace with your API endpoint or handle logic here
-    console.log('Submitting form:', formData);
+    setError('')
+    try {
+      const { success, message } = await getRegisterAPI(formData.username, formData.password, formData.user_role);
+      if (success) {
+        navigate('/dashboard');
+      } else {
+        setError(message);
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Unexpected error');
+    }
   };
 
   return (
-    <div className="container">
+    <div className={styles.container}>
       <h2>Register</h2>
       <h3>Add user</h3>
       <form onSubmit={handleSubmit}>
@@ -49,7 +60,7 @@ export default function Register() {
           id="user_role"
           name="user_role"
           value={formData.user_role}
-          onChange={handleChange}
+          onChange={handleRoleChange}
         >
           <option value="2">Viewer</option>
           <option value="1">Moderator</option>

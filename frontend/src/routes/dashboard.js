@@ -64,40 +64,6 @@ export default function Dashboard() {
 }
 
 /*
-// Connect to the backend Socket.IO server
-const socket = io('http://localhost:5000');
-
-let ledState = false; // Initial LED state is off
-
-fetch('/load/devices', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-        devices: Array.from(deviceArray)
-    })
-})
-.then(response => response.json())
-.then(data => {
-    // Handle the response data
-    if (data.deviceList) {
-        data.deviceList.forEach(element => {
-            deviceArray.push(element);
-        });
-        console.log("Device list loaded:", deviceArray);
-    }
-
-    deviceArray.forEach(device => {
-        const deviceType = getDeviceType(device);
-        const current_device = new DeviceDisplay(device.name, device.model, device.last_updated, device.status, deviceType);
-        current_device.displayDevice();
-    });
-    console.log(data);
-})
-.catch(error => {
-    console.error('Error fetching device data:', error);
-});
 
 // Set up LED toggle button event handler after DOM loads
 window.onload = function() {
@@ -126,20 +92,6 @@ function animateRemoveCard(element) {
 
 
 // Handles creation, update, and removal of device cards in the dashboard
-
-
-function toggleLED() {
-    const command = ledState ? 'off' : 'on';
-    fetch(`/led/${command}`)
-        .then(response => response.text())
-        .then(data => {
-            ledState = !ledState; // Toggle the state
-            updateButton();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-    });
-}
 
 function updateButton() {
     const button = document.getElementById('toggle-button');
@@ -172,22 +124,6 @@ setInterval(() => {
     const sensorData = Math.random() * 100; // do
     updateSensorData(sensorData);
 }, 400); // update each 400 miliseconds
-
-function updateValue() {
-    fetch('/get_value')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('display').textContent = "Value: " + data.value;
-        });
-}
-
-
-socket.on('device_update', (data) => {
-    device = getDeviceType(data);
-
-    const current_device = new DeviceDisplay(data.device_name, data.device_model, data.last_updated, data.status, device);
-    current_device.displayDevice();
-});
 
 // Poll every 2 seconds
 
