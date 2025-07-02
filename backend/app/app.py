@@ -11,7 +11,6 @@ from .utils.auth_utils import login_required
 # Placeholder for sensor data (can be updated elsewhere
 
 @app.route('/load/devices', methods=['POST'])
-@login_required
 def load_devices():
     """
     Load and return device list from database.
@@ -48,7 +47,6 @@ def load_devices():
             return jsonify({"error": str(e)}), 500
 
 @app.route('/led/<state>')
-@login_required
 def led_control(state: str):
     """
     Control the LED on the device via MQTT.
