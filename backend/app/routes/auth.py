@@ -8,7 +8,7 @@ from ..utils.auth_utils import login_required
 auth_bp = Blueprint('auth', __name__)
 CORS(auth_bp, resources={r"/login": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 
-def _cors_preflight_response():
+def cors_preflight_response():
     response = make_response()
     response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
     response.headers.add("Access-Control-Allow-Headers", "Content-Type")
@@ -20,10 +20,10 @@ def _cors_preflight_response():
 def register():
     if request.method == 'OPTIONS':
         print("🔥 register() got called with OPTIONS method!")
-        return _cors_preflight_response()
+        return cors_preflight_response()
     
     print("🔥 register() got called with POST method!")
-    data = request.get_json()
+    data = request.get_json() or {}
     if not data:
         return jsonify({"msg": "Missing JSON in request"}), 400
     
@@ -38,14 +38,13 @@ def register():
         new_user = User(username=username, role_id=role_id)
         new_user.set_password(password)
         db.session.add(new_user)
+        db.session.commit()
     else:
         print("🔥 register() - User already exists, updating password")
         print(f"🔥 register() - Updating password for user: {username}")
         existing_user.set_password(password)
         existing_user.role_id = role_id  # Update role if needed
-
-        db.session.commit()
-        
+        db.session.commit()        
     return '', 204  # 204 means "No Content"
 
 @auth_bp.route('/login', methods=['POST', 'OPTIONS'])
@@ -53,11 +52,11 @@ def login():
     print("🔥 login() got called!")        # simple print
     if request.method == 'OPTIONS':
         print("🔥 login() got called with OPTIONS method!")
-        return _cors_preflight_response()
+        return cors_preflight_response()
     
     print("🔥 login() got called with POST method!")
     
-    data = request.get_json()  # Parse the JSON body
+    data = request.get_json() or {} # Parse the JSON body
     if not data:
         return jsonify({"msg": "Missing JSON in request"}), 400
     

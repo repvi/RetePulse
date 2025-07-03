@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 import config from "./config";
+import * as load_device from "../../componenets/DeviceDisplayUI/deviceLoad"
+import { data } from "react-router-dom";
 // Connect to the backend Socket.IO server
 //const socket = io('http://localhost:5000');
 
+let deviceArray = [];
+
 const token_key = 'access_token';
-let ledState = false; // Initial LED state is off
+// let ledState = false; // Initial LED state is off
 
 export async function getLoginAPI(username, password) {
     const url = `${config.API_URL}/auth/login`;
@@ -15,7 +19,7 @@ export async function getLoginAPI(username, password) {
             body: JSON.stringify({username, password})
         })
 
-     const data = await res.json();
+        const data = await res.json();
         if (res.ok && data.access_token) {
             // Store the token in localStorage or a cookie
             localStorage.setItem(token_key, data.access_token);
@@ -55,39 +59,38 @@ export async function getRegisterAPI(username, password, user_role) {
         console.error('Error in getRegisterAPI:', error);
     }
 }
-/*
-function getRegisteredDevicesAPI() {
-    fetch('/load/devices', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            devices: Array.from(deviceArray)
+
+/**
+ * Fetch the list of registered devices.
+ * @returns {Promise<Array<Object>>} Resolves to an array of device objects.
+ */
+export async function getRegisteredDevicesAPI() {
+    const url = `${config.API_URL}/load/devices`;
+    try {
+        console.log('Fetching registered devices from:', url);
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({devices: deviceArray})
         })
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Handle the response data
-        if (data.deviceList) {
-            data.deviceList.forEach(element => {
-                deviceArray.push(element);
-            });
-            console.log("Device list loaded:", deviceArray);
+
+        console.log('Response status:', res.status);
+
+        let devices = await res.json();
+        if (res.ok && devices.deviceArray) {
+            console.log('Devices fetched successfully:', devices.deviceArray);
+            return devices.deviceArray;
+        } else {
+            console.error('Failed to fetch devices:', devices.message || 'Unknown error');
+            console.warn('No device array found');
+            return [];
         }
-
-        deviceArray.forEach(device => {
-            const deviceType = getDeviceType(device);
-            const current_device = new DeviceDisplay(device.name, device.model, device.last_updated, device.status, deviceType);
-            current_device.displayDevice();
-        });
-        console.log(data);
-    })
-    .catch(error => {
-        console.error('Error fetching device data:', error);
-    });
+    } catch (error) {
+        console.error('Error in getRegisteredDevicesAPI:', error);
+        return [];
+    }
 }
-
+/*
 function toggleLedAPI() {
     const command = ledState ? 'off' : 'on';
     fetch(`/led/${command}`)
@@ -105,7 +108,7 @@ function updateValue() {
     fetch('/get_value')
         .then(response => response.json())
         .then(data => {
-            document.getElementById('display').textContent = "Value: " + data.value;
+            document.getaeById('display').textContent = "Value: " + data.value;
         });
 }
 

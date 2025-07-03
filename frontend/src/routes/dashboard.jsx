@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom"; // Use if using React Router
-import "./css/dashboard.css"; // Adjust path as needed
+import styles from "./css/dashboard.css"; // Adjust path as needed
+import { getRegisteredDevicesAPI } from "../api/flask/flaskapi"; // Import the API function
+import { DeviceDisplayBox } from '../componenets/DeviceDisplayUI/deviceLoad';
+//import styles from "./css/dashboard.module.css"; // Adjust path as needed
 /*
 <template id = device-control-template>
         <div class="device-control-box">
@@ -10,16 +13,18 @@ import "./css/dashboard.css"; // Adjust path as needed
         </div>
     </template>
 */
+
 export default function Dashboard() {
+  const [devices, setDevices] = useState([]); // State to hold registered devices
+
+  useEffect(() => {
+    getRegisteredDevicesAPI().then(setDevices)
+  }, []); // Empty array ensures it runs only once
   return (
     <div>
-      <header>
-        {/* You can add header content here */}
-      </header>
-
       <main>
-        <div className="container">
-          <h2 style={{ display: "inline-block", marginBottom: 5 }}>Dashboard</h2>
+        <div className={styles.container}>
+          <h2 id="dashboard-title">Dashboard</h2>
           <div className="inner-main-card">
             <h3 style={{ textAlign: "left" }}>Registered Devices</h3>
             <div
@@ -30,9 +35,18 @@ export default function Dashboard() {
                 alignItems: "flex-start",
               }}
             >
-              {/* Render device display boxes here, e.g.:
-                  <DeviceDisplayBox ... />
-              */}
+              {
+                devices.map(device => (
+                  <DeviceDisplayBox
+                    key={device.name}
+                    name={device.name}
+                    model={device.model}
+                    last_updated={device.last_updated}
+                    status={device.status}
+                    sensor_type={device.sensor_type}
+                  />
+                ))
+              }
             </div>
             <button className="toggle-button off" id="toggle-button">
               LED

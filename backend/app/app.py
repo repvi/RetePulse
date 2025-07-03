@@ -1,4 +1,5 @@
 from flask import request, render_template, redirect, url_for, flash, jsonify
+from flask_cors import CORS, cross_origin
 from sqlalchemy import select, func
 from .app_instance import app
 from .extensions import db
@@ -6,11 +7,12 @@ from .models.models import Device
 from .config import run_flask
 from .services.mqtt_service import send_message, MQTT_TOPIC_LED
 from .services.ota import MQTT_TOPIC_OTA
-from .utils.auth_utils import login_required
 
 # Placeholder for sensor data (can be updated elsewhere
 
-@app.route('/load/devices', methods=['POST'])
+CORS(app, resources={r"/load/devices": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+
+@app.route('/load/devices', methods=['POST', 'OPTIONS'])
 def load_devices():
     """
     Load and return device list from database.
@@ -18,6 +20,11 @@ def load_devices():
     """
     with app.app_context():
         try:
+            if request.method == 'OPTIONS':
+                print("🔥 load_devices() got called with OPTIONS method!")
+                return jsonify({"message": "CORS preflight response"}), 200
+            
+            print("🔥 load_devices() got called with POST method!")
             # Get JSON data from request within context
             data = request.get_json()
             device_list = data.get('devices', [])
@@ -28,9 +35,12 @@ def load_devices():
             devices = db.session.execute(select(Device)).scalars().all()
 
             # Compare counts
-            if len(device_list) == device_count:
-                return jsonify({"deviceList": None})
-
+            #if len(device_list) == device_count:
+            #    print(f"🔥 load_devices() - Device count matches: {len(device_list)}")
+            #    return jsonify({"deviceArray": None})
+            
+            devices.append(Device(name="New Device", model="Model X", status="active", sensor_type="uart", last_updated="2023-10-01T12:00:00Z"))
+            devices.append(Device(name="Another Device", model="Model Y", status="inactive", sensor_type="i2c", last_updated="2023-10-02T12:00:00Z"))
             # Build refresh list
             refresh_devices = [{
                 'name': device.name,
@@ -40,7 +50,10 @@ def load_devices():
                 'last_updated': device.last_updated
             } for device in devices]
 
-            return jsonify({"deviceList": refresh_devices})
+            for d in refresh_devices:
+                print(f"Device: {d['name']}, Model: {d['model']}, Status: {d['status']}, Sensor Type: {d['sensor_type']}, Last Updated: {d['last_updated']}")
+
+            return jsonify({"deviceArray": refresh_devices})
 
         except Exception as e:
             print(f"Database error: {str(e)}")

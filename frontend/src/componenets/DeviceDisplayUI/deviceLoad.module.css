@@ -23,7 +23,7 @@
     transform: scale(1.05);
 }
 
-.inner-main-card {
+.inner-main-card { /* used in dashboard.css */
     --inner-main-card-padding-value: 40px;
     width: 100%; 
     padding-left: var(--inner-main-card-padding-value);
