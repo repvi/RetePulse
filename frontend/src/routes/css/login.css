@@ -2,7 +2,7 @@
     --background-color: #32009d;
     font-family: Arial, sans-serif;
     background-color: var(--background-color);
-    height: 100vh;
+    height: 100vh auto;
 }
 
 h2 {
@@ -10,22 +10,27 @@ h2 {
     color: #ffff;
 }
 
-input[type="text"],
-input[type="password"] {
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+.login-page input[type="text"],
+.login-page input[type="password"] {
     width: 92.4%;
     padding: 10px;
     margin: 10px 0;
 }
 
-input[type="submit"] {
+.login-page input[type="submit"] {
     width: 100%;
     padding: 10px;
-    background-color: #720137;
+    background-color: #240171;
     color: #fff;
     border: none;
     cursor: pointer;
 }
 
-input[type="submit"]:hover {
-    background-color: #55022a;
+.login-page input[type="submit"]:hover {
+    background-color: #100032;
 }

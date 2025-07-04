@@ -46,7 +46,7 @@ export function DeviceDisplayBox({name, model, last_updated, status, sensor_type
             <span className={styles['device-device-status']}>{status}</span>
           </div>
           <div style={{ textAlign: "right" }}>
-            <span className={styles['device-last-updated']}>{last_updated}</span>
+            <span className={styles['device-last-updated']}>{"Last updated: " + last_updated}</span>
           </div>
         </div>
       </div>

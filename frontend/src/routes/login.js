@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion';
 import './css/login.css'; // Adjust the path as needed
 import styles from './modules/login.module.css'; // Adjust the path as needed
 import { getLoginAPI } from '../api/flask/flaskapi'; // Adjust the import path as needed
+import backgroundImage from '../assets/login-background.jpg'; // Adjust the path as needed
 // <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+
+function loginfailedMessage() {
+  return (
+    <div className={styles.errorMessage}>
+      <p>Login failed</p>
+    </div>
+  );
+}
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -28,6 +38,9 @@ export default function Login() {
         navigate('/dashboard');
       } else {
         setError(message);
+        formData.password = ''; // Clear password field on error
+        formData.username = ''; // Clear username field on error
+        loginfailedMessage(); // Display login failed message
       }
     } catch (err) {
       console.error(err);
@@ -36,29 +49,48 @@ export default function Login() {
   }
 
   return (
-    <div className={styles.container}>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          autoComplete="off"
-          value={formData.username}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          autoComplete="off"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-        <input type="submit" value="Login" autoComplete='off'/>
-      </form>
+    <div
+      className={'login-page'}
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        height: '100vh',
+        backgroundSize: 'cover',
+        backgroundPosition: 'top left',
+        backgroundRepeat: 'no-repeat',
+        display: 'flex',
+        justifyContent: 'center',
+      }}
+    >
+      <motion.div
+        initial={{y: -50, opacity: 0}}
+        animate={{y: 0, opacity: 1}}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
+        <div className={styles.container}>
+          <h2>Login</h2>
+          <form onSubmit={handleSubmit} className="login-form">
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              autoComplete="off"
+              value={formData.username}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              autoComplete="off"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+            <input type="submit" value="Login" autoComplete='off'/>
+          </form>
+        </div>
+      </motion.div>
     </div>
   );
 }

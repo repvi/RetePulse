@@ -1,8 +1,11 @@
-:root {
+.dashboard-page {
     --main-color: #091d35;
+    background-color: var(--main-color);
+    height: 100vh;
 }
 
-html, body {
+.dashboard-page html,
+.dashboard-page body {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -13,16 +16,11 @@ html, body {
     flex-direction: column;
 }
 
-h2 {
+.dashboard-page h2 {
     text-align: center;
 }
 
-#dashboard-title {
-    text-align: center;
-    margin-bottom: 5px;
-}
-
-header {
+.dashboard-page header {
     left: 0;
     top: 0;
     color: snow;
@@ -30,7 +28,7 @@ header {
     flex-direction: column;
 }
 
-main {
+.dashboard-page main {
     --container-background: #0c2543;
     top: 0;
     left: 0;
@@ -44,7 +42,7 @@ main {
     overflow-x: hidden;
 }
 
-footer {
+.dashboard-page footer {
     height: 80px;      /* Fixed height */
     width: 100%;
     padding: 10px;
@@ -54,50 +52,4 @@ footer {
     justify-content: center;
     align-items: center;
     margin-top: auto;    /* Key change: pushes footer to bottom */
-}
-
-.container {
-    --container-background: #0c2543;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: auto;
-    min-height: calc(100vh - 200px); /* Subtract footer height */
-    padding-bottom: 20px;
-    background-color: var(--container-background);
-    color: snow;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-}
-
-.inner-main-card {
-    --inner-main-card-padding-value: 40px;
-    width: 100%; 
-    padding-left: var(--inner-main-card-padding-value);
-    padding-right: var(--inner-main-card-padding-value);
-    padding-bottom: var(--inner-main-card-padding-value);
-    box-sizing: border-box;
-}
-
-.toggle-button {
-    background-color: rgba(0, 0, 0, 0.5);
-    color: snow;
-    padding: 10px;
-    border: none;
-    cursor: pointer;
-    border: 2px solid #000000;
-    width: 50%;
-}
-
-.toggle-button.off {
-    background-color: rgba(0, 0, 0, 0);
-    color: snow;
-    padding: 10px;
-    border: 2px solid #000000;
-    width: 50%;
-}
-
-.clearfix {
-    clear: both;
 }

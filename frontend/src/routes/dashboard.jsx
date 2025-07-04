@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Link } from "react-router-dom"; // Use if using React Router
-import styles from "./css/dashboard.css"; // Adjust path as needed
+import "./css/dashboard.css"; // Adjust path as needed
+import styles from "./modules/dashboard.module.css"; // Adjust path as needed
 import { getRegisteredDevicesAPI } from "../api/flask/flaskapi"; // Import the API function
 import { DeviceDisplayBox } from '../componenets/DeviceDisplayUI/deviceLoad';
 //import styles from "./css/dashboard.module.css"; // Adjust path as needed
@@ -13,6 +15,24 @@ import { DeviceDisplayBox } from '../componenets/DeviceDisplayUI/deviceLoad';
         </div>
     </template>
 */
+function DeviceDisplayArea({ devices }) {
+  return (
+    <div id="device-display-area" style={{display: "flex", flexDirection: "column",}}>
+    {
+      devices.map((device, i) => (
+        <motion.div 
+          key={device.name} // Assuming each device has a unique id
+          initial={{ x: -30, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: i * 0.15, duration: 0.6, ease: 'easeOut' }}
+        >
+          <DeviceDisplayBox {...device} />
+        </motion.div>
+      ))
+    }
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const [devices, setDevices] = useState([]); // State to hold registered devices
@@ -21,45 +41,27 @@ export default function Dashboard() {
     getRegisteredDevicesAPI().then(setDevices)
   }, []); // Empty array ensures it runs only once
   return (
-    <div>
+    <div className={"dashboard-page"}>
       <main>
-        <div className={styles.container}>
+        <div className={styles['container']}>
           <h2 id="dashboard-title">Dashboard</h2>
-          <div className="inner-main-card">
+          <div className={styles['inner-main-card']}>
             <h3 style={{ textAlign: "left" }}>Registered Devices</h3>
-            <div
-              id="device-display-area"
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-              }}
-            >
-              {
-                devices.map(device => (
-                  <DeviceDisplayBox
-                    key={device.name}
-                    name={device.name}
-                    model={device.model}
-                    last_updated={device.last_updated}
-                    status={device.status}
-                    sensor_type={device.sensor_type}
-                  />
-                ))
-              }
-            </div>
-            <button className="toggle-button off" id="toggle-button">
+              
+            <DeviceDisplayArea devices={devices} />
+
+            <button className={`${styles['toggle-button']} ${styles['off']}`} id={styles['toggle-button']}>
               LED
             </button>
           </div>
         </div>
 
-        <div className="bottom-container">
-          <div className="upload" style={{ margin: 10, textAlign: "center" }}>
+        <div className={styles['bottom-container']}>
+          <div className={styles['upload']} style={{ margin: 10, textAlign: "center" }}>
             {/* Use <a href="/upload"> if not using React Router */}
             <Link to="/upload">Upload Firmware</Link>
           </div>
-          <div className="logout" style={{ margin: 10, textAlign: "center" }}>
+          <div className={styles['logout']} style={{ margin: 10, textAlign: "center" }}>
             <a href="/logout" style={{ textAlign: "center" }}>
               Logout
             </a>

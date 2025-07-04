@@ -1,0 +1,45 @@
+.container {
+    --container-background: #0c2543;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: auto;
+    min-height: calc(100vh - 200px); /* Subtract footer height */
+    padding-bottom: 20px;
+    background-color: var(--container-background);
+    color: snow;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+.inner-main-card {
+    --inner-main-card-padding-value: 40px;
+    width: 100%; 
+    padding-left: var(--inner-main-card-padding-value);
+    padding-right: var(--inner-main-card-padding-value);
+    padding-bottom: var(--inner-main-card-padding-value);
+    box-sizing: border-box;
+}
+
+.toggle-button {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: snow;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    border: 2px solid #000000;
+    width: 50%;
+}
+
+.toggle-button.off {
+    background-color: rgba(0, 0, 0, 0);
+    color: snow;
+    padding: 10px;
+    border: 2px solid #000000;
+    width: 50%;
+}
+
+.clearfix {
+    clear: both;
+}
