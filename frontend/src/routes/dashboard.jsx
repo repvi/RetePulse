@@ -26,7 +26,7 @@ function DeviceDisplayArea({ devices }) {
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: i * 0.15, duration: 0.6, ease: 'easeOut' }}
         >
-          <DeviceDisplayBox {...device} />
+          <DeviceDisplayBox device={device} />
         </motion.div>
       ))
     }

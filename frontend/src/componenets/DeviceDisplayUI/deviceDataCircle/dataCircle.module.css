@@ -1,0 +1,50 @@
+.device-sensor-area {
+    display: flex;
+    justify-content: center;
+}
+
+.circle-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.circle {
+  --progress-angle: 0deg;
+  --fill-color:   rgb(30, 209, 170);
+  --empty-color:  rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width:  150px;
+  height: 150px;
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      var(--fill-color) 0deg var(--progress-angle),
+      var(--empty-color) var(--progress-angle) 360deg
+    );
+  position: relative;
+}
+
+/* the “inner hole” mask */
+.circle::after {
+  content: "";
+  position: absolute;
+  top:  50%; left: 50%;
+  width:  80px;   /* adjust diameter of hole */
+  height: 80px;
+  border-radius: 50%;
+  background-color: rgb(2, 1, 48);  /* or whatever your background is */
+  transform: translate(-50%, -50%);
+}
+
+.progress {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+}

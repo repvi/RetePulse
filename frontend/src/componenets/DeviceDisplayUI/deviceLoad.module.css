@@ -60,3 +60,37 @@
     /* prevent children from stretching */
     width: auto;
 }
+
+.device-back {
+    display: flex;               
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: center;
+    width: 100%;                
+    height: 100%;             
+}
+.device-back-text {
+    align-items: center;
+    margin: auto;
+}
+
+.device-options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px auto;
+    gap: 10px;
+}
+
+.device-delete-confirmation {
+  position: fixed;               /* detach from flow, anchor to viewport */
+  top: 50%;                      /* halfway down */
+  left: 50%;                     /* halfway across */
+  transform: translate(-50%, -50%);  /* pull back by half its own size */
+  background: white;             /* or whatever your dialog bg is */
+  padding: 1rem 1.5rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  color: black;
+  z-index: 10000;                /* above your app UI */
+}
