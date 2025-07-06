@@ -74,7 +74,7 @@ def login():
     if user and user.check_password(password):
         print("✅ login() successful, issuing token")
         access_token = create_access_token(identity=username)
-        return jsonify(access_token=access_token), 200
+        return jsonify(access_token=access_token, id=user.id), 200
     
     print("🚫 login() failed: bad credentials")
     return jsonify({"msg": "Bad username or password"}), 403

@@ -7,7 +7,14 @@ import { data } from "react-router-dom";
 
 let deviceArray = [];
 
-const token_key = 'access_token';
+export const token_key = 'access_token';
+export const user_id = 'user_id';
+
+export const id_type = Object.freeze({
+  admin: 1,
+  viewer: 2,
+});
+
 // let ledState = false; // Initial LED state is off
 
 export async function getLoginAPI(username, password) {
@@ -23,6 +30,7 @@ export async function getLoginAPI(username, password) {
         if (res.ok && data.access_token) {
             // Store the token in localStorage or a cookie
             localStorage.setItem(token_key, data.access_token);
+            localStorage.setItem(user_id, data.id);
             return { success: true, message: 'Login successful' };
         }
         else {

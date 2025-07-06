@@ -1,0 +1,60 @@
+#dashboard-title {
+    text-align: center;
+    margin-bottom: 5px;
+    color: azure;
+}
+
+.container {
+    position: relative;       /* make this a positioning context */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    flex-direction: column; /* Stack elements vertically */
+    width: 300px;
+    margin-top: 150px;
+    height: 400px;
+    padding: 20px; /* Extra space in the box */
+    background-color: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    border: #000c17 2px solid;
+    border-radius: 10px;
+}
+
+.exit-button {
+  position: absolute;
+  top: 2px;                 /* distance from container’s top */
+  right: 2px;               /* distance from container’s right */
+  padding: 8px 16px;
+  background-color: rgba(0, 0, 0, 0);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.comfirm-page {
+  --background-color: #32009d;
+  font-family: Arial, sans-serif;
+  background-color: var(--background-color);
+  height: 100vh auto;
+}
+
+.comfirm-page input[type="text"],
+.comfirm-page input[type="password"] {
+    width: 92.4%;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.comfirm-page input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #240171;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.comfirm-page input[type="submit"]:hover {
+    background-color: #100032;
+}

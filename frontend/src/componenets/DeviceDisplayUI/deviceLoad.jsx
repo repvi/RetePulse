@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom'
 import styles from "./deviceLoad.module.css"; // Adjust the path as needed
 import { DeviceUART } from "./deviceDataCircle/dataCircle";
+import useNavigateWithBacktrack from "../../backtrack";
+import { user_id, id_type } from "../../api/flask/flaskapi"; // Adjust the import path as needed
 
 function loadDeviceBlank() {
     return <div className="device-sensor-data"></div>;
@@ -44,7 +47,9 @@ function FrontText({ device, onFlip = () => {} }) {
   );
 }
 
-export function BackText({ onCancel = () => {} }) {  
+export function BackText({ onCancel = () => {} }) {
+  const nav = useNavigateWithBacktrack();
+
   return (
     <div className="device-back-space">
       <div className={styles['device-back']}>
@@ -54,7 +59,10 @@ export function BackText({ onCancel = () => {} }) {
         <div className={styles['device-options']}>
           <button 
             className={styles['device-delete-button']}
-            onClick={goToDeletePage}
+            onClick={() => {
+              console.log("Delete action triggered");
+              nav('/admin/confirm');
+            }}
           >
             Delete
           </button>
@@ -70,23 +78,18 @@ export function BackText({ onCancel = () => {} }) {
   );
 }
 
-function goToDeletePage() {
-  // This function can be used to navigate to a delete confirmation page
-  // or perform the delete action directly.
-  console.log("Delete action triggered");
-}
-
 export function DeviceDisplayBox({device = {}}) {
   const { name, model, last_updated, status, sensor_type } = device;
   const children = getDeviceType({sensor_type});
   const [flipped, setFlipped] = useState(false);        // added
-  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const isAdmin = localStorage.getItem(user_id) == id_type.admin; // Check if the user is an admin
 
   return (
     <div className={styles['device-display']}>
       <div className={styles['device-display-box']}>
       {
-        flipped ? 
+        isAdmin && flipped ? 
         <BackText 
           onCancel={() => setFlipped(false)}
         />

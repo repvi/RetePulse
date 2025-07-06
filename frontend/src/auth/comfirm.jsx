@@ -1,32 +1,49 @@
+
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion';
-import './css/login.css'; // Adjust the path as needed
-import styles from './modules/login.module.css'; // Adjust the path as needed
+import './css/comfirm.css'; // Adjust the path as needed
+import styles from './modules/comfirm.module.css'; // Adjust the path as needed
 import { getLoginAPI } from '../api/flask/flaskapi'; // Adjust the import path as needed
 import backgroundImage from '../assets/login-background.jpg'; // Adjust the path as needed
-import { user_id } from '../api/flask/flaskapi'; // Adjust the import path as needed
-import NavigateWithBackTrack from "../backtrack"; // Import backtrack functionality if needed
-import useNavigateWithBacktrack from '../backtrack';
-import bgVideo from '../assets/login-background.mp4'; // Adjust the path as needed
+import useNavigateWithBacktrack, { getPreviousURL } from "../backtrack";
+
 // <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+
+export function HasAccess() {
+
+}
 
 function loginfailedMessage() {
   return (
-    <div className={styles.errorMessage}>
-      <p>Login failed</p>
+    <div className={'error-Message'}>
+      <p>Comfirmation failed</p>
     </div>
   );
 }
 
-export default function Login() {
-  const [formData, setFormData] = useState({
+function ExitButton() {
+  const navigateWithBack = useNavigateWithBacktrack();
+  const prev = getPreviousURL();
+
+  return (
+    <button
+      className={styles['exit-button']}
+      onClick={() => navigateWithBack(prev)}
+    >
+      ✕
+    </button>
+  );
+}
+
+export default function ConfirmActionAdminPage() {
+    const [formData, setFormData] = useState({
     username: '',
     password: ''
   });
 
-  const [error, setError] = useState('');
-  const nav = useNavigateWithBacktrack();
+  const [error, setError]       = useState('');
+  const navigate                = useNavigateWithBacktrack();
+  const [tries,   setTries]       = useState(0);
 
   const handleChange = e => {
     setFormData(f => ({ ...f, [e.target.name]: e.target.value }))
@@ -38,48 +55,52 @@ export default function Login() {
     try {
       const { success, message } = await getLoginAPI(formData.username, formData.password);
       if (success) {
-        nav('/dashboard'); // Use backtrack navigation
-      } else {
+        // delete here
+        setTries(0);
+        const prev_url = getPreviousURL();
+        navigate(prev_url);
+      } 
+      else if (tries < 3) {
         setError(message);
         formData.password = ''; // Clear password field on error
         formData.username = ''; // Clear username field on error
         loginfailedMessage(); // Display login failed message
+        setTries(t => t + 1);
+      }
+      else {
+        setTries(0);
+        const prev_url = getPreviousURL();
+        navigate(prev_url);
       }
     } catch (err) {
       console.error(err);
       setError(err.message || 'Unexpected error');
     }
   }
+  console.log('Login component rendered');
 
   return (
     <div
-      className={'login-page'}
+      className={styles['comfirm-page']}
       style={{
-        position: 'relative', 
-        background: 'none',
-        overflow: 'hidden',
-        // backgroundImage: `url(${backgroundImage})`,
+        backgroundImage: `url(${backgroundImage})`,
         height: '100vh',
         backgroundSize: 'cover',
         backgroundPosition: 'top left',
-        // backgroundRepeat: 'no-repeat',
-        backgroundColor: 'transparent',
+        backgroundRepeat: 'no-repeat',
         display: 'flex',
         justifyContent: 'center',
       }}
     >
-      <video autoPlay loop muted className={styles["background-video"]}>
-        <source src={bgVideo} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
       <motion.div
         initial={{y: -50, opacity: 0}}
         animate={{y: 0, opacity: 1}}
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
-        <div className={styles.container}>
-          <h2>LOGIN</h2>
-          <form onSubmit={handleSubmit} className="login-form">
+        <div className={styles['container']}>
+          <ExitButton/>
+          <h2>Comfirm</h2>
+          <form onSubmit={handleSubmit} className="comfirm-form">
             <input
               type="text"
               name="username"
@@ -98,7 +119,7 @@ export default function Login() {
               onChange={handleChange}
               required
             />
-            <input type="submit" value="login" autoComplete='off'/>
+            <input type="submit" value="Comfirm" autoComplete='off'/>
           </form>
         </div>
       </motion.div>

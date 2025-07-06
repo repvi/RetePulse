@@ -1,18 +1,14 @@
-#root {
-    --background-color: #32009d;
-    font-family: Arial, sans-serif;
-    background-color: var(--background-color);
-    height: 100vh auto;
-}
-
 h2 {
     text-align: center;
     color: #ffff;
 }
 
-html, body {
+html, body, #root {
+  font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  height: 100vh auto;
+  background: none;
 }
 
 .login-page input[type="text"],
@@ -25,12 +21,12 @@ html, body {
 .login-page input[type="submit"] {
     width: 100%;
     padding: 10px;
-    background-color: #240171;
+    background-color: #01a897;
     color: #fff;
     border: none;
     cursor: pointer;
 }
 
 .login-page input[type="submit"]:hover {
-    background-color: #100032;
+    background-color: #017469;
 }
