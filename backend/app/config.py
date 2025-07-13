@@ -1,36 +1,25 @@
-from .app_instance import app
+from .app_instance import app, socketio
 from multiprocessing import Process
 import platform
+from .services.mqtt_service import start_mqtt_client, MQTT_BROKER
 
 current_os = platform.system()
 # Configuration constants
 CONFIG_DEBUG = True
 
-def run_flask(host, port, debug) -> None:
+def run_flask(host, port, debug) -> bool:
     """
     Start the Flask application.
     - On Windows: runs Flask directly.
     - On Linux: runs Flask directly if debug, otherwise starts in a separate process.
     Returns True if started successfully, False otherwise.
     """
-    """
-    if not start_mqtt_client():
-        print("Failed to start MQTT client.")
-        return False
-    else:
+
+    if start_mqtt_client():
         print(f"MQTT broker IP address: {MQTT_BROKER}")
         print("Flask server starting")
-    """
-    
-    global current_os
-    if current_os == "Windows":
-        app.run(host=host, port=port, debug=debug)
-    elif current_os == "Linux":
-        if CONFIG_DEBUG is True:
-            app.run(host=host, port=port, debug=debug)
-        else:
-            frontend_process = Process(target=run_flask, args=(host, port, debug))
-            frontend_process.start()
+        socketio.run(app, host=host, port=port, debug=debug, use_reloader=False)
+        return True
     else:
-        print(f"Unsupported OS: {current_os}. Flask server not started.")
+        print("Failed to start MQTT client.")
         return False

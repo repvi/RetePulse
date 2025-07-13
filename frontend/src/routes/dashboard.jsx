@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from "react-router-dom"; // Use if using React Router
 import "./css/dashboard.css"; // Adjust path as needed
 import styles from "./modules/dashboard.module.css"; // Adjust path as needed
-import { getRegisteredDevicesAPI } from "../api/flask/flaskapi"; // Import the API function
+import { getRegisteredDevicesAPI, useSocketIOConnect } from "../api/flask/flaskapi"; // Import the API function
 import { DeviceDisplayBox } from '../componenets/DeviceDisplayUI/deviceLoad';
+
 //import styles from "./css/dashboard.module.css"; // Adjust path as needed
 /*
 <template id = device-control-template>
@@ -15,21 +16,36 @@ import { DeviceDisplayBox } from '../componenets/DeviceDisplayUI/deviceLoad';
         </div>
     </template>
 */
+
+const DeviceDisplayItem = memo(
+  function DeviceDisplayItem({ device, index }) {
+    return (
+      <motion.div
+        initial={{ x: -30, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: index * 0.15, duration: 0.6, ease: "easeOut" }}
+      >
+        <DeviceDisplayBox device={device} />
+      </motion.div>
+    );
+  },
+  // only re‐render if the device object *identity* changes
+  (prev, next) => prev.device === next.device
+);
+
 function DeviceDisplayArea({ devices }) {
   return (
-    <div id="device-display-area" style={{display: "flex", flexDirection: "column",}}>
-    {
-      devices.map((device, i) => (
-        <motion.div 
-          key={device.name} // Assuming each device has a unique id
-          initial={{ x: -30, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: i * 0.15, duration: 0.6, ease: 'easeOut' }}
-        >
-          <DeviceDisplayBox device={device} />
-        </motion.div>
-      ))
-    }
+    <div
+      id="device-display-area"
+      style={{ display: "flex", flexDirection: "column" }}
+    >
+      {devices.map((device, i) => (
+        <DeviceDisplayItem
+          key={device.id}    // stable unique key
+          device={device}
+          index={i}
+        />
+      ))}
     </div>
   );
 }
@@ -38,8 +54,11 @@ export default function Dashboard() {
   const [devices, setDevices] = useState([]); // State to hold registered devices
 
   useEffect(() => {
-    getRegisteredDevicesAPI().then(setDevices)
+    getRegisteredDevicesAPI().then(setDevices);
   }, []); // Empty array ensures it runs only once
+
+  useSocketIOConnect(setDevices);
+  
   return (
     <div className={"dashboard-page"}>
       <main>

@@ -1,5 +1,4 @@
-from ..extensions import db, socketio
-from ..app_instance import app
+from ..app_instance import app, db, socketio
 from ..models.models import Device
 import paho.mqtt.client as mqtt
 from sqlalchemy import select
@@ -59,7 +58,9 @@ def device_connection_info(data) -> None:
                 existing_device.status = status
                 existing_device.sensor_type = sensor_type
                 existing_device.last_updated = last_updated
+                print(f"Updating existing device: {device_name}")
             else:
+                print(f"Adding new device: {device_name}")
                 new_device = Device(
                     name=device_name,
                     model=device_model,
@@ -67,10 +68,10 @@ def device_connection_info(data) -> None:
                     sensor_type=sensor_type,
                     last_updated=last_updated
                 )
+                print(f"New device: {new_device}")
                 db.session.add(new_device)
 
             db.session.commit()
-
             # Emit update after successful database operation
             socketio.emit('device_update', {
                 'device_name': device_name,
@@ -164,6 +165,7 @@ def start_mqtt_client() -> bool:
 
                     if mqtt_client.is_connected():
                         print("MQTT client connected successfully.")
+
                         return True
             print(f"Connection attempt {attempt + 1} failed. Retrying...")
             time.sleep(2)  # Wait before retrying

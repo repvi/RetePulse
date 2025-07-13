@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import config from "./config";
 import * as load_device from "../../componenets/DeviceDisplayUI/deviceLoad"
 import { data } from "react-router-dom";
+import { io } from 'socket.io-client';
+import { DeviceDisplayBox } from "../../componenets/DeviceDisplayUI/deviceLoad";
+
 // Connect to the backend Socket.IO server
-//const socket = io('http://localhost:5000');
+const SOCKET_URL = 'http://localhost:5000';
 
 let deviceArray = [];
 
@@ -79,7 +82,7 @@ export async function getRegisteredDevicesAPI() {
         const res = await fetch(url, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({devices: deviceArray})
+            // body: JSON.stringify({devices: deviceArray})
         })
 
         console.log('Response status:', res.status);
@@ -97,6 +100,63 @@ export async function getRegisteredDevicesAPI() {
         console.error('Error in getRegisteredDevicesAPI:', error);
         return [];
     }
+}
+
+export function useSocketIOConnect(setDevices) {
+  useEffect(() => {
+    // create the socket with reconnection enabled
+    const socket = io(SOCKET_URL, {
+      reconnection: true,                // default is true
+      reconnectionAttempts: Infinity,    // keep trying
+      reconnectionDelay: 1000,           // initial delay
+      transports: ["websocket"]          // use WebSocket only
+    });
+
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+    });
+
+    socket.on("device_update", data => {
+        // if the server ever sends strings, parse them; otherwise data is already an object
+        const payload = typeof data === "string" ? JSON.parse(data) : data; 
+        const updatedDevice = {
+            name:         payload.device_name,  // map device_name → name
+            model:        payload.device_model, // map device_model → model
+            status:       payload.status,
+            sensor_type:  payload.sensor_type,
+            last_updated: payload.last_updated
+        };
+        console.log("Received device update:", updatedDevice);
+        console.log("device name:", updatedDevice.name);
+    
+        setDevices(devs => {
+            devs.forEach((d, i) => {
+                console.log(`devs[${i}].name =`, d.name);
+            });         // match on the same field your server emits (here: device_name)
+
+            const idx = devs.findIndex(d => d.name === updatedDevice.name);
+
+            if (idx > -1) {
+                // update that one entry (no duplicate)
+                const next = [...devs];
+                next[idx] = { ...next[idx], ...updatedDevice };
+                return next;
+            }
+
+            return [...devs, updatedDevice];
+        });
+    });
+
+    socket.on("disconnect", reason => {
+      console.warn("Socket disconnected:", reason);
+    });
+
+    // clean up on unmount
+    return () => {
+      socket.off("device_update");
+      socket.disconnect();
+    };
+  }, [setDevices]);  // run once
 }
 /*
 function toggleLedAPI() {

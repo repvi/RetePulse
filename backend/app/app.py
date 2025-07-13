@@ -1,6 +1,6 @@
 from flask import request, render_template, redirect, url_for, flash, jsonify
 from flask_cors import CORS, cross_origin
-from sqlalchemy import select, func
+from sqlalchemy import select, func, delete
 from .app_instance import app
 from .extensions import db
 from .models.models import Device
@@ -25,30 +25,29 @@ def load_devices():
                 return jsonify({"message": "CORS preflight response"}), 200
             
             print("🔥 load_devices() got called with POST method!")
-            # Get JSON data from request within context
-            data = request.get_json()
-            device_list = data.get('devices', [])
 
             # Database operations
-            stmt = select(func.count()).select_from(Device)
-            device_count = db.session.execute(stmt).scalar()
             devices = db.session.execute(select(Device)).scalars().all()
-
-            # Compare counts
-            #if len(device_list) == device_count:
-            #    print(f"🔥 load_devices() - Device count matches: {len(device_list)}")
-            #    return jsonify({"deviceArray": None})
-            
-            devices.append(Device(name="New Device", model="Model X", status="active", sensor_type="uart", last_updated="2023-10-01T12:00:00Z"))
-            devices.append(Device(name="Another Device", model="Model Y", status="inactive", sensor_type="i2c", last_updated="2023-10-02T12:00:00Z"))
             # Build refresh list
-            refresh_devices = [{
-                'name': device.name,
-                'model': device.model,
-                'status': device.status,
-                'sensor_type': device.sensor_type,
-                'last_updated': device.last_updated
-            } for device in devices]
+            refresh_devices = []
+            #         count = Device.query.filter_by(name=name).delete()
+            #db.session.commit()
+            #
+            #db.session.execute(delete(Device))
+            #db.session.commit()
+            num = 1
+            for device in devices:
+                device.status = 'dissconnected'  # Set status to disconnected
+                entry = {
+                    'name': device.name,
+                    'model': device.model,
+                    'status': device.status,
+                    'sensor_type': device.sensor_type,
+                    'last_updated': device.last_updated
+                }
+                refresh_devices.append(entry)
+
+            db.session.commit()  # Commit changes to the database
 
             for d in refresh_devices:
                 print(f"Device: {d['name']}, Model: {d['model']}, Status: {d['status']}, Sensor Type: {d['sensor_type']}, Last Updated: {d['last_updated']}")

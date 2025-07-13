@@ -25,7 +25,6 @@ function FrontText({ device, onFlip = () => {} }) {
       className={styles['device-display-info']}
       onClick={onFlip}
       role="button"
-      tabIndex={0}
       style={{cursor: "pointer"}}
     >
       <div
@@ -37,7 +36,7 @@ function FrontText({ device, onFlip = () => {} }) {
       <div className={styles['device-display-sub-info']}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <span className={styles['device-model']}>{model}</span>
-          <span className={styles['device-device-status']}>{status}</span>
+          <span className={styles['device-status']}>{status}</span>
         </div>
         <div style={{ textAlign: "right" }}>
           <span className={styles['device-last-updated']}>{"Last updated: " + last_updated}</span>
@@ -86,7 +85,7 @@ export function DeviceDisplayBox({device = {}}) {
   const isAdmin = localStorage.getItem(user_id) == id_type.admin; // Check if the user is an admin
 
   return (
-    <div className={styles['device-display']}>
+    <div className={styles['device-display']} id={name}>
       <div className={styles['device-display-box']}>
       {
         isAdmin && flipped ? 
