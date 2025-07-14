@@ -5,7 +5,6 @@ import Login                      from './routes/login';
 import Register                   from './routes/register';
 import UploadFirmware             from './routes/upload';
 import { RequireAdmin }           from './auth/required'; 
-import ConfirmActionAdminPage     from './auth/comfirm'; // Adjust the import path as needed
 import { number } from "framer-motion";
 
 function AdminLayout() {
@@ -29,16 +28,6 @@ function App() {
         <Route path="/logout"     element={<Login/>} />
 
         {/* Admin parent route – must NOT self-close */}
-        <Route
-          path="/admin"
-          element={
-            <RequireAdmin>
-              <AdminLayout />
-            </RequireAdmin>
-          }
-        >
-          <Route path="confirm" element={<ConfirmActionAdminPage />} />
-        </Route>
       </Routes>
     </BrowserRouter>
   );

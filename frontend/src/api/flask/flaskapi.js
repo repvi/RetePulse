@@ -113,7 +113,7 @@ export function useSocketIOConnect(setDevices) {
     });
 
     socket.on("connect", () => {
-      console.log("Socket connected:", socket.id);
+      console.log("Socket connected: ", socket.id);
     });
 
     socket.on("device_update", data => {
@@ -147,6 +147,17 @@ export function useSocketIOConnect(setDevices) {
         });
     });
 
+    socket.on("device_delete_update", data => {
+        const payload = typeof data === "string" ? JSON.parse(data) : data; 
+        console.log("Here 1");
+
+        if (payload.name) {
+            console.log("Here 2");
+
+            setDevices(devs => devs.filter(d => d.name !== payload.name));
+        }
+    });
+
     socket.on("disconnect", reason => {
       console.warn("Socket disconnected:", reason);
     });
@@ -158,32 +169,20 @@ export function useSocketIOConnect(setDevices) {
     };
   }, [setDevices]);  // run once
 }
-/*
-function toggleLedAPI() {
-    const command = ledState ? 'off' : 'on';
-    fetch(`/led/${command}`)
-        .then(response => response.text())
-        .then(data => {
-            ledState = !ledState; // Toggle the state
-            updateButton();
+
+export async function removeDeviceFromDB(name) {
+    const url = `${config.API_URL}/db/delete`;
+    try {
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name})
         })
-        .catch(error => {
-            console.error('Error:', error);
-    });
+
+        const data = await res.json();
+
+        return { success: true, message: 'Login successful' };
+    } catch (error) {
+        console.error("Error in removeDeviceFromDB: ", error);
+    }
 }
-
-function updateValue() {
-    fetch('/get_value')
-        .then(response => response.json())
-        .then(data => {
-            document.getaeById('display').textContent = "Value: " + data.value;
-        });
-}
-
-socket.on('device_update', (data) => {
-    device = getDeviceType(data);
-
-    const current_device = new DeviceDisplay(data.device_name, data.device_model, data.last_updated, data.status, device);
-    current_device.displayDevice();
-});
-*/

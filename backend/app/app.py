@@ -1,8 +1,7 @@
 from flask import request, render_template, redirect, url_for, flash, jsonify
 from flask_cors import CORS, cross_origin
 from sqlalchemy import select, func, delete
-from .app_instance import app
-from .extensions import db
+from .app_instance import app, db, socketio
 from .models.models import Device
 from .config import run_flask
 from .services.mqtt_service import send_message, MQTT_TOPIC_LED
@@ -10,7 +9,13 @@ from .services.ota import MQTT_TOPIC_OTA
 
 # Placeholder for sensor data (can be updated elsewhere
 
-CORS(app, resources={r"/load/devices": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+CORS(app, 
+    resources={
+        r"/load/devices": {"origins": "http://localhost:3000"},
+        r"/db/delete": {"origins": "http://localhost:3000"}
+    }, 
+    supports_credentials=True
+)
 
 @app.route('/load/devices', methods=['POST', 'OPTIONS'])
 def load_devices():
@@ -57,6 +62,27 @@ def load_devices():
         except Exception as e:
             print(f"Database error: {str(e)}")
             return jsonify({"error": str(e)}), 500
+
+@app.route('/db/delete', methods=['POST', 'OPTIONS'])
+def removeDeviceFromDb():
+    with app.app_context():
+        if request.method == 'OPTIONS':
+            print("🔥 load_devices() got called with OPTIONS method!")
+            return jsonify({"message": "CORS preflight response"}), 200
+
+        print("🔥 load_devices() got called with POST method!")
+        data = request.get_json() or {}
+
+        name = data.get('name')
+        existing_device = Device.query.filter_by(name=name).first()
+        if existing_device:
+            db.session.delete(existing_device)
+            db.session.commit()
+            socketio.emit('device_delete_update', {
+                'name' : name
+            })
+        
+        return '', 204  # 204 means "No Content"
 
 @app.route('/led/<state>')
 def led_control(state: str):

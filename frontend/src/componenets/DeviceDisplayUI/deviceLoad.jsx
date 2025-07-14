@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import styles from "./deviceLoad.module.css"; // Adjust the path as needed
 import { DeviceUART } from "./deviceDataCircle/dataCircle";
 import useNavigateWithBacktrack from "../../backtrack";
-import { user_id, id_type } from "../../api/flask/flaskapi"; // Adjust the import path as needed
+import { user_id, id_type, removeDeviceFromDB } from "../../api/flask/flaskapi"; // Adjust the import path as needed
 
 function loadDeviceBlank() {
     return <div className="device-sensor-data"></div>;
@@ -46,7 +46,7 @@ function FrontText({ device, onFlip = () => {} }) {
   );
 }
 
-export function BackText({ onCancel = () => {} }) {
+export function BackText({name, onCancel = () => {} }) {
   const nav = useNavigateWithBacktrack();
 
   return (
@@ -60,7 +60,7 @@ export function BackText({ onCancel = () => {} }) {
             className={styles['device-delete-button']}
             onClick={() => {
               console.log("Delete action triggered");
-              nav('/admin/confirm');
+              removeDeviceFromDB(name);
             }}
           >
             Delete
@@ -90,6 +90,7 @@ export function DeviceDisplayBox({device = {}}) {
       {
         isAdmin && flipped ? 
         <BackText 
+          name={name}
           onCancel={() => setFlipped(false)}
         />
         : <FrontText device={device} onFlip={() => setFlipped(f => !f)} />
