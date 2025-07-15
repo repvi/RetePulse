@@ -24,7 +24,7 @@ MQTT_TOPIC_OTA = "ota"
 MQTT_TOPIC_SENSOR = "sensor"
 MQTT_TOPIC_SET_DEVICE = "device_info"
 MQTT_TOPIC_DEVICE_RECONFIGURE = "device_reconfigure"
-MQTT_TOPIC_STATUS = "device/status"
+MQTT_TOPIC_STATUS = "status"
 
 # Thread-safe queue for incoming MQTT messages
 message_queue = queue.Queue()
@@ -32,10 +32,37 @@ mqtt_client: Optional[mqtt.Client] = None
 
 class MQTTMessage:
     """Represents an MQTT message with topic and payload."""
-    def __init__(self, client_id: str, topic: str, payload: str):
-        self.client_id = client_id
+    def __init__(self, client: str, topic: str, payload: str):
+        self.client = client
         self.topic = topic
         self.payload = payload
+
+def get_device_from_db(name: str) -> Optional[Device]:
+    """
+    Retrieve a device from the database by its name.
+    """
+    with app.app_context():
+        stmt = select(Device).where(Device.name == name)
+        return db.session.execute(stmt).scalar_one_or_none()
+
+def set_device_subscriptions(name) -> None:
+    """
+    Subscribe to a device's status topic.
+    """
+    subToTopic = MQTT_TOPIC_STATUS + f"/{name}"
+    mqtt_client.subscribe(subToTopic)
+    print(f"Subscribed to topic: {subToTopic}")
+    process_operations[subToTopic] = device_set_status
+
+def device_unsubscribe(name) -> None:
+    """
+    Unsubscribe from a device's status topic.
+    """
+    subToTopic = MQTT_TOPIC_STATUS + f"/{name}"
+    mqtt_client.unsubscribe(subToTopic)
+    print(f"Unsubscribed from topic: {subToTopic}")
+    if subToTopic in process_operations:
+        del process_operations[subToTopic]  # Remove the handler for this topic
 
 def device_connection_info(data) -> None:
     """
@@ -44,14 +71,14 @@ def device_connection_info(data) -> None:
     """
     with app.app_context():
         try:
-            device_name = data['device_name']
-            device_model = data['device_model']
+            parsed = json.loads(data.payload)
+            device_name = parsed['device_name']
+            device_model = parsed['device_model']
             status = 'connected'
-            sensor_type = data['sensor_type']
-            last_updated = data['last_updated']
-            # Use modern select pattern
-            stmt = select(Device).where(Device.name == device_name)
-            existing_device = db.session.execute(stmt).scalar_one_or_none()
+            sensor_type = parsed['sensor_type']
+            last_updated = parsed['last_updated']
+
+            existing_device = get_device_from_db(device_name)
 
             if existing_device:
                 existing_device.name = device_name
@@ -73,6 +100,7 @@ def device_connection_info(data) -> None:
                 db.session.add(new_device)
 
             db.session.commit()
+            set_device_subscriptions(device_name)
             # Emit update after successful database operation
             socketio.emit('device_update', {
                 'device_name': device_name,
@@ -84,6 +112,31 @@ def device_connection_info(data) -> None:
 
         except Exception as e:
             print(f"Database error in device_connection_info: {str(e)}")
+            db.session.rollback()
+
+def device_set_status(data) -> None:
+    """
+    Placeholder function for setting device status.
+    """
+    with app.app_context():
+        try: 
+            print(f"Received device status update: {data.payload}")
+            name = data.topic.split("/")[-1] # Extracts 'client42'
+            parsed = json.loads(data.payload)
+            status = parsed['status']
+            existing_device = db.session.execute(select(Device).where(Device.name == name)).scalar_one_or_none()
+            if existing_device and existing_device.status is not status:
+                existing_device.status = status
+                db.session.commit()
+                print(f"Updated device {name} status to {status}")
+            else:
+                print(f"Device {name} not found in database, cannot update status.")
+            socketio.emit('device_status_update', {
+                'name': name,
+                'status': status
+            })
+        except Exception as e:
+            print(f"Database error in device_set_status: {str(e)}")
             db.session.rollback()
 
 def device_sensor_data(data) -> None:
@@ -102,17 +155,17 @@ def process_messages() -> None:
     try:
         global message_queue
         while True:
-            message = message_queue.get()
-            data = json.loads(message.payload)
-            
-            if message.topic in process_operations:
-                process_operations[message.topic](data)
-                print(f"Processing message for topic: {message.topic}")
+            data = message_queue.get()
+
+            if data.topic in process_operations:
+                """ Already registered topic """
+                process_operations[data.topic](data)
+                print(f"Processing message for topic: {data.topic}")
             else:
-                print(f"No processing function found for topic: {message.topic}")
+                print(f"No processing function found for topic: {data.topic}")
                 # request as if it is a completely new device
                 send_message(MQTT_TOPIC_DEVICE_RECONFIGURE, "reset")
-                
+
     except Exception as e:
         print(f"JSON parse error: {e}")
 
@@ -130,7 +183,7 @@ def on_message(client, userdata, msg) -> None:
     """
     global message_queue
     message_data = MQTTMessage(
-        client_id=client._client_id.decode(),
+        client=client,
         topic=msg.topic,
         payload=msg.payload.decode('utf-8')
     )

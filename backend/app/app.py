@@ -4,7 +4,7 @@ from sqlalchemy import select, func, delete
 from .app_instance import app, db, socketio
 from .models.models import Device
 from .config import run_flask
-from .services.mqtt_service import send_message, MQTT_TOPIC_LED
+from .services.mqtt_service import send_message, device_unsubscribe, MQTT_TOPIC_LED
 from .services.ota import MQTT_TOPIC_OTA
 
 # Placeholder for sensor data (can be updated elsewhere
@@ -26,10 +26,7 @@ def load_devices():
     with app.app_context():
         try:
             if request.method == 'OPTIONS':
-                print("🔥 load_devices() got called with OPTIONS method!")
-                return jsonify({"message": "CORS preflight response"}), 200
-            
-            print("🔥 load_devices() got called with POST method!")
+                return jsonify({"message": "CORS preflight response"}), 200            
 
             # Database operations
             devices = db.session.execute(select(Device)).scalars().all()
@@ -63,15 +60,14 @@ def load_devices():
 def removeDeviceFromDb():
     with app.app_context():
         if request.method == 'OPTIONS':
-            print("🔥 load_devices() got called with OPTIONS method!")
             return jsonify({"message": "CORS preflight response"}), 200
 
-        print("🔥 load_devices() got called with POST method!")
         data = request.get_json() or {}
 
         name = data.get('name')
         existing_device = Device.query.filter_by(name=name).first()
         if existing_device:
+            device_unsubscribe(name)
             db.session.delete(existing_device)
             db.session.commit()
             socketio.emit('device_delete_update', {

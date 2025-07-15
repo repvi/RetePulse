@@ -8,8 +8,6 @@ import { DeviceDisplayBox } from "../../componenets/DeviceDisplayUI/deviceLoad";
 // Connect to the backend Socket.IO server
 const SOCKET_URL = 'http://localhost:5000';
 
-let deviceArray = [];
-
 export const token_key = 'access_token';
 export const user_id = 'user_id';
 
@@ -81,6 +79,7 @@ export async function getRegisteredDevicesAPI() {
         console.log('Fetching registered devices from:', url);
         const res = await fetch(url, {
             method: 'POST',
+            cache: "no-store",  // Prevent cached responses
             headers: {'Content-Type': 'application/json'},
             // body: JSON.stringify({devices: deviceArray})
         })
@@ -157,6 +156,22 @@ export function useSocketIOConnect(setDevices) {
             setDevices(devs => devs.filter(d => d.name !== payload.name));
         }
     });
+
+    socket.on('device_status_update', data => {
+        const payload = typeof data === "string" ? JSON.parse(data) : data;
+        console.log("Device status update received:", payload);
+
+        if (payload.name && payload.status) {
+            setDevices(devs => {
+                return devs.map(d => {
+                    if (d.name === payload.name) {
+                        return { ...d, status: payload.status };
+                    }
+                    return d;
+                });
+            });
+        }
+    })
 
     socket.on("disconnect", reason => {
       console.warn("Socket disconnected:", reason);
