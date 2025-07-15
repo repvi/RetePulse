@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 from ..app_instance import app
 from ..utils.auth_utils import login_required
-from .mqtt_service import send_message, MQTT_TOPIC_OTA
+from .mqtt.mqtt_service import send_message, MQTT_TOPIC_OTA
 
 # Configuration for firmware uploads
 app.config['UPLOAD_FOLDER'] = '/var/fm_project/firmware'  # Where the file will be saved

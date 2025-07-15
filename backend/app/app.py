@@ -3,8 +3,8 @@ from flask_cors import CORS, cross_origin
 from sqlalchemy import select, func, delete
 from .app_instance import app, db, socketio
 from .models.models import Device
-from .config import run_flask
-from .services.mqtt_service import send_message, device_unsubscribe, MQTT_TOPIC_LED
+from .start import run_flask
+from .services.mqtt.mqtt_service import send_message, device_unsubscribe, MQTT_TOPIC_LED
 from .services.ota import MQTT_TOPIC_OTA
 
 # Placeholder for sensor data (can be updated elsewhere

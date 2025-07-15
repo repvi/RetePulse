@@ -1,0 +1,11 @@
+{
+    "version": "1.0.0",
+    "mqtt-broker": "test.mosquitto.org",        
+    "mqtt-broker-port": 1883,
+    "topic": {
+        "ota": "ota",
+        "device-info": "device_info",
+        "device-reconfigure": "device_reconfigure",
+        "status": "status"
+    }
+}

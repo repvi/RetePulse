@@ -1,5 +1,5 @@
-from ..app_instance import app, db, socketio
-from ..models.models import Device
+from ...app_instance import app, db, socketio
+from ...models.models import Device
 import paho.mqtt.client as mqtt
 from sqlalchemy import select
 import threading
@@ -7,24 +7,81 @@ from typing import Optional
 import platform
 import queue
 import json
+import os
 
 current_os = platform.system()
+
+# Configuration loader (moved here to avoid circular imports)
+def load_mqtt_config():
+    """
+    Load MQTT configuration from mqtt_config.json
+    Returns the configuration dictionary
+    """
+    config_path = os.path.join(os.path.dirname(__file__), 'mqtt_config.json')
+    try:
+        with open(config_path, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print(f"MQTT config file not found at {config_path}")
+        return {}
+    except json.JSONDecodeError as e:
+        print(f"Error parsing MQTT config: {e}")
+        return {}
+
+def get_config_value(config, key, default=None):
+    """
+    Get a configuration value with optional default.
+    
+    Args:
+        config: Configuration dictionary
+        key: Configuration key (supports dot notation like 'topic.ota')
+        default: Default value if key is not found
+    
+    Returns:
+        Configuration value or default
+    """
+    if not config:
+        return default
+    
+    # Support dot notation for nested keys
+    keys = key.split('.')
+    value = config
+    
+    try:
+        for k in keys:
+            value = value[k]
+        return value
+    except (KeyError, TypeError):
+        return default
+
+# Load configuration
+mqtt_config = load_mqtt_config()
 
 # Fallback function for unrecognized MQTT topics
 fallback = lambda *args: "Invalid"
 
-MQTT_BROKER = None
-if current_os == "Windows":
-    MQTT_BROKER = "test.mosquitto.org" # for windows
-elif current_os == "Linux":
-    MQTT_BROKER = "localhost" # for linux
+# Load MQTT broker configuration with fallbacks
+def get_mqtt_broker():
+    """Get MQTT broker based on config file or fallback to platform defaults"""
+    broker_url = get_config_value(mqtt_config, 'mqtt-broker')
+    if broker_url:
+        # Extract just the hostname from mqtt://hostname:port format
+        if broker_url.startswith('mqtt://'):
+            return broker_url.replace('mqtt://', '').split(':')[0]
+        return broker_url
+    
+    # Fallback to platform-specific defaults
+    return "test.mosquitto.org" if current_os == "Windows" else "localhost"
 
-MQTT_TOPIC_LED = "led"
-MQTT_TOPIC_OTA = "ota"
-MQTT_TOPIC_SENSOR = "sensor"
-MQTT_TOPIC_SET_DEVICE = "device_info"
-MQTT_TOPIC_DEVICE_RECONFIGURE = "device_reconfigure"
-MQTT_TOPIC_STATUS = "status"
+# Configuration-based constants
+MQTT_BROKER = get_mqtt_broker()
+MQTT_PORT = get_config_value(mqtt_config, 'mqtt-broker-port', 1883)
+MQTT_TOPIC_LED = get_config_value(mqtt_config, 'topic.led', 'led')
+MQTT_TOPIC_OTA = get_config_value(mqtt_config, 'topic.ota', 'ota') 
+MQTT_TOPIC_SENSOR = get_config_value(mqtt_config, 'topic.sensor', 'sensor')
+MQTT_TOPIC_SET_DEVICE = get_config_value(mqtt_config, 'topic.device-info', 'device_info')
+MQTT_TOPIC_DEVICE_RECONFIGURE = get_config_value(mqtt_config, 'topic.device-reconfigure', 'device_reconfigure')
+MQTT_TOPIC_STATUS = get_config_value(mqtt_config, 'topic.status', 'status')
 
 # Thread-safe queue for incoming MQTT messages
 message_queue = queue.Queue()
@@ -215,8 +272,8 @@ def start_mqtt_client() -> bool:
 
         retry_count = 3
         for attempt in range(retry_count):
-            print(f"Attempting to connect to MQTT broker (Attempt {attempt + 1}/{retry_count})")
-            status = mqtt_client.connect(MQTT_BROKER, 1883, 60)
+            print(f"Attempting to connect to MQTT broker {MQTT_BROKER}:{MQTT_PORT} (Attempt {attempt + 1}/{retry_count})")
+            status = mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
             if status == mqtt.MQTT_ERR_SUCCESS:
                 status = mqtt_client.loop_start()
                 if status == mqtt.MQTT_ERR_SUCCESS:
@@ -234,3 +291,26 @@ def start_mqtt_client() -> bool:
     except Exception as e:
         print(f"Error starting MQTT client: {e}")
         return False
+
+def reload_config():
+    """
+    Reload configuration from file.
+    Useful for runtime configuration updates.
+    """
+    global mqtt_config, MQTT_BROKER, MQTT_PORT
+    global MQTT_TOPIC_LED, MQTT_TOPIC_OTA, MQTT_TOPIC_SENSOR
+    global MQTT_TOPIC_SET_DEVICE, MQTT_TOPIC_DEVICE_RECONFIGURE, MQTT_TOPIC_STATUS
+    
+    mqtt_config = load_mqtt_config()
+    
+    # Reload all configuration-based constants
+    MQTT_BROKER = get_mqtt_broker()
+    MQTT_PORT = get_config_value(mqtt_config, 'mqtt-broker-port', 1883)
+    MQTT_TOPIC_LED = get_config_value(mqtt_config, 'topic.led', 'led')
+    MQTT_TOPIC_OTA = get_config_value(mqtt_config, 'topic.ota', 'ota') 
+    MQTT_TOPIC_SENSOR = get_config_value(mqtt_config, 'topic.sensor', 'sensor')
+    MQTT_TOPIC_SET_DEVICE = get_config_value(mqtt_config, 'topic.device-info', 'device_info')
+    MQTT_TOPIC_DEVICE_RECONFIGURE = get_config_value(mqtt_config, 'topic.device-reconfigure', 'device_reconfigure')
+    MQTT_TOPIC_STATUS = get_config_value(mqtt_config, 'topic.status', 'status')
+    
+    return mqtt_config
