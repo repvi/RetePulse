@@ -118,7 +118,7 @@ export function useSocketIOConnect(setDevices) {
 
     socket.on("device_update", data => {
         // if the server ever sends strings, parse them; otherwise data is already an object
-        const payload = typeof data === "string" ? JSON.parse(data) : data; 
+        const payload = typeof data === "string" ? JSON.parse(data) : data;
         const updatedDevice = {
             name:         payload.device_name,  // map device_name → name
             model:        payload.device_model, // map device_model → model

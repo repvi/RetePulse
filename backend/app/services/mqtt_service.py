@@ -23,6 +23,7 @@ MQTT_TOPIC_LED = "led"
 MQTT_TOPIC_OTA = "ota"
 MQTT_TOPIC_SENSOR = "sensor"
 MQTT_TOPIC_SET_DEVICE = "device_info"
+MQTT_TOPIC_DEVICE_RECONFIGURE = "device_reconfigure"
 MQTT_TOPIC_STATUS = "device/status"
 
 # Thread-safe queue for incoming MQTT messages
@@ -90,8 +91,7 @@ def device_sensor_data(data) -> None:
 
 # Map MQTT topics to processing functions
 process_operations = {
-    MQTT_TOPIC_SET_DEVICE : device_connection_info,
-    MQTT_TOPIC_SENSOR : device_sensor_data,
+    MQTT_TOPIC_SET_DEVICE : device_connection_info #default
 }
 
 def process_messages() -> None:
@@ -104,8 +104,15 @@ def process_messages() -> None:
         while True:
             message = message_queue.get()
             data = json.loads(message.payload)
-            result = process_operations.get(message.topic, fallback)(data)
-            print(result)
+            
+            if message.topic in process_operations:
+                process_operations[message.topic](data)
+                print(f"Processing message for topic: {message.topic}")
+            else:
+                print(f"No processing function found for topic: {message.topic}")
+                # request as if it is a completely new device
+                send_message(MQTT_TOPIC_DEVICE_RECONFIGURE, "reset")
+                
     except Exception as e:
         print(f"JSON parse error: {e}")
 
@@ -113,7 +120,7 @@ def on_connect(client, userdata, flags, rc) -> None:
     """MQTT callback for successful connection."""
     client_id = client._client_id.decode()
     print(f"Device {client_id} connected with result code {rc}")
-    client.subscribe(MQTT_TOPIC_SENSOR + f"/{client_id}")
+    #client.subscribe(MQTT_TOPIC_SENSOR + f"/{client_id}")
     client.subscribe(MQTT_TOPIC_SET_DEVICE)
 
 def on_message(client, userdata, msg) -> None:

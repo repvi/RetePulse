@@ -34,26 +34,22 @@ def load_devices():
             # Database operations
             devices = db.session.execute(select(Device)).scalars().all()
             # Build refresh list
-            refresh_devices = []
             #         count = Device.query.filter_by(name=name).delete()
             #db.session.commit()
             #
             #db.session.execute(delete(Device))
             #db.session.commit()
-            num = 1
-            for device in devices:
-                device.status = 'dissconnected'  # Set status to disconnected
-                entry = {
-                    'name': device.name,
-                    'model': device.model,
-                    'status': device.status,
-                    'sensor_type': device.sensor_type,
-                    'last_updated': device.last_updated
-                }
-                refresh_devices.append(entry)
-
-            db.session.commit()  # Commit changes to the database
-
+            refresh_devices = [
+                {
+                    'name':         d.name,
+                    'model':        d.model,
+                    'status':       d.status,
+                    'sensor_type':  d.sensor_type,
+                    'last_updated': d.last_updated
+                } 
+                for d in devices
+            ]
+            
             for d in refresh_devices:
                 print(f"Device: {d['name']}, Model: {d['model']}, Status: {d['status']}, Sensor Type: {d['sensor_type']}, Last Updated: {d['last_updated']}")
 
