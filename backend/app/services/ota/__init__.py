@@ -172,7 +172,7 @@ from .ota import (
 
 # Package metadata
 __version__ = "1.0.0"
-__author__ = "MicroUSC-Sentinel Team"
+__author__ = "repvi"
 __description__ = "OTA firmware update service for IoT devices"
 
 # Public API

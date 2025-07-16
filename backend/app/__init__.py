@@ -1,3 +1,4 @@
+from .config import config_helper
 from .app import run_flask
 from .app_instance import app
 from .routes.auth import register, login, logout
