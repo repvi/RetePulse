@@ -11,6 +11,10 @@ Main Components:
 - MQTT client lifecycle management
 """
 
+# Import configuration first
+from .config import MQTTConfig, get_config_value, reload_config
+
+# Then import service functions
 from .mqtt_service import (
     # Core MQTT client functions
     start_mqtt_client,
@@ -64,8 +68,10 @@ __all__ = [
     
     # Classes and data structures
     'MQTTMessage',
-    'message_queue'
+    'message_queue',
+    
+    # Configuration
+    'MQTTConfig',
+    'get_config_value',
+    'reload_config',
 ]
-
-# Configuration functions are now imported from mqtt_service
-# No need to redefine them here to avoid circular imports

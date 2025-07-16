@@ -3,7 +3,7 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from .extensions import db, socketio
 from .routes import auth_bp, dashboard_bp
-from .config import config
+#from .config import config
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)

@@ -1,87 +1,16 @@
+from .config import MQTTConfig, get_config_value, reload_config
+import json
 from ...app_instance import app, db, socketio
 from ...models.models import Device
 import paho.mqtt.client as mqtt
 from sqlalchemy import select
 import threading
 from typing import Optional
-import platform
 import queue
-import json
-import os
 
-current_os = platform.system()
-
-# Configuration loader (moved here to avoid circular imports)
-def load_mqtt_config():
-    """
-    Load MQTT configuration from mqtt_config.json
-    Returns the configuration dictionary
-    """
-    config_path = os.path.join(os.path.dirname(__file__), 'mqtt_config.json')
-    try:
-        with open(config_path, 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        print(f"MQTT config file not found at {config_path}")
-        return {}
-    except json.JSONDecodeError as e:
-        print(f"Error parsing MQTT config: {e}")
-        return {}
-
-def get_config_value(config, key, default=None):
-    """
-    Get a configuration value with optional default.
-    
-    Args:
-        config: Configuration dictionary
-        key: Configuration key (supports dot notation like 'topic.ota')
-        default: Default value if key is not found
-    
-    Returns:
-        Configuration value or default
-    """
-    if not config:
-        return default
-    
-    # Support dot notation for nested keys
-    keys = key.split('.')
-    value = config
-    
-    try:
-        for k in keys:
-            value = value[k]
-        return value
-    except (KeyError, TypeError):
-        return default
-
-# Load configuration
-mqtt_config = load_mqtt_config()
 
 # Fallback function for unrecognized MQTT topics
 fallback = lambda *args: "Invalid"
-
-# Load MQTT broker configuration with fallbacks
-def get_mqtt_broker():
-    """Get MQTT broker based on config file or fallback to platform defaults"""
-    broker_url = get_config_value(mqtt_config, 'mqtt-broker')
-    if broker_url:
-        # Extract just the hostname from mqtt://hostname:port format
-        if broker_url.startswith('mqtt://'):
-            return broker_url.replace('mqtt://', '').split(':')[0]
-        return broker_url
-    
-    # Fallback to platform-specific defaults
-    return "test.mosquitto.org" if current_os == "Windows" else "localhost"
-
-# Configuration-based constants
-MQTT_BROKER = get_mqtt_broker()
-MQTT_PORT = get_config_value(mqtt_config, 'mqtt-broker-port', 1883)
-MQTT_TOPIC_LED = get_config_value(mqtt_config, 'topic.led', 'led')
-MQTT_TOPIC_OTA = get_config_value(mqtt_config, 'topic.ota', 'ota') 
-MQTT_TOPIC_SENSOR = get_config_value(mqtt_config, 'topic.sensor', 'sensor')
-MQTT_TOPIC_SET_DEVICE = get_config_value(mqtt_config, 'topic.device-info', 'device_info')
-MQTT_TOPIC_DEVICE_RECONFIGURE = get_config_value(mqtt_config, 'topic.device-reconfigure', 'device_reconfigure')
-MQTT_TOPIC_STATUS = get_config_value(mqtt_config, 'topic.status', 'status')
 
 # Thread-safe queue for incoming MQTT messages
 message_queue = queue.Queue()
@@ -106,7 +35,7 @@ def set_device_subscriptions(name) -> None:
     """
     Subscribe to a device's status topic.
     """
-    subToTopic = MQTT_TOPIC_STATUS + f"/{name}"
+    subToTopic = MQTTConfig.TOPIC_STATUS + f"/{name}"
     mqtt_client.subscribe(subToTopic)
     print(f"Subscribed to topic: {subToTopic}")
     process_operations[subToTopic] = device_set_status
@@ -115,7 +44,7 @@ def device_unsubscribe(name) -> None:
     """
     Unsubscribe from a device's status topic.
     """
-    subToTopic = MQTT_TOPIC_STATUS + f"/{name}"
+    subToTopic = MQTTConfig.TOPIC_STATUS + f"/{name}"
     mqtt_client.unsubscribe(subToTopic)
     print(f"Unsubscribed from topic: {subToTopic}")
     if subToTopic in process_operations:
@@ -201,7 +130,7 @@ def device_sensor_data(data) -> None:
 
 # Map MQTT topics to processing functions
 process_operations = {
-    MQTT_TOPIC_SET_DEVICE : device_connection_info #default
+    MQTTConfig.TOPIC_SET_DEVICE : device_connection_info #default
 }
 
 def process_messages() -> None:
@@ -221,7 +150,7 @@ def process_messages() -> None:
             else:
                 print(f"No processing function found for topic: {data.topic}")
                 # request as if it is a completely new device
-                send_message(MQTT_TOPIC_DEVICE_RECONFIGURE, "reset")
+                send_message(MQTTConfig.TOPIC_DEVICE_RECONFIGURE, "reset")
 
     except Exception as e:
         print(f"JSON parse error: {e}")
@@ -231,7 +160,7 @@ def on_connect(client, userdata, flags, rc) -> None:
     client_id = client._client_id.decode()
     print(f"Device {client_id} connected with result code {rc}")
     #client.subscribe(MQTT_TOPIC_SENSOR + f"/{client_id}")
-    client.subscribe(MQTT_TOPIC_SET_DEVICE)
+    client.subscribe(MQTTConfig.TOPIC_SET_DEVICE)
 
 def on_message(client, userdata, msg) -> None:
     """
@@ -272,8 +201,8 @@ def start_mqtt_client() -> bool:
 
         retry_count = 3
         for attempt in range(retry_count):
-            print(f"Attempting to connect to MQTT broker {MQTT_BROKER}:{MQTT_PORT} (Attempt {attempt + 1}/{retry_count})")
-            status = mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
+            print(f"Attempting to connect to MQTT broker {MQTTConfig.BROKER}:{MQTTConfig.PORT} (Attempt {attempt + 1}/{retry_count})")
+            status = mqtt_client.connect(MQTTConfig.BROKER, MQTTConfig.PORT, 60)
             if status == mqtt.MQTT_ERR_SUCCESS:
                 status = mqtt_client.loop_start()
                 if status == mqtt.MQTT_ERR_SUCCESS:
@@ -291,26 +220,3 @@ def start_mqtt_client() -> bool:
     except Exception as e:
         print(f"Error starting MQTT client: {e}")
         return False
-
-def reload_config():
-    """
-    Reload configuration from file.
-    Useful for runtime configuration updates.
-    """
-    global mqtt_config, MQTT_BROKER, MQTT_PORT
-    global MQTT_TOPIC_LED, MQTT_TOPIC_OTA, MQTT_TOPIC_SENSOR
-    global MQTT_TOPIC_SET_DEVICE, MQTT_TOPIC_DEVICE_RECONFIGURE, MQTT_TOPIC_STATUS
-    
-    mqtt_config = load_mqtt_config()
-    
-    # Reload all configuration-based constants
-    MQTT_BROKER = get_mqtt_broker()
-    MQTT_PORT = get_config_value(mqtt_config, 'mqtt-broker-port', 1883)
-    MQTT_TOPIC_LED = get_config_value(mqtt_config, 'topic.led', 'led')
-    MQTT_TOPIC_OTA = get_config_value(mqtt_config, 'topic.ota', 'ota') 
-    MQTT_TOPIC_SENSOR = get_config_value(mqtt_config, 'topic.sensor', 'sensor')
-    MQTT_TOPIC_SET_DEVICE = get_config_value(mqtt_config, 'topic.device-info', 'device_info')
-    MQTT_TOPIC_DEVICE_RECONFIGURE = get_config_value(mqtt_config, 'topic.device-reconfigure', 'device_reconfigure')
-    MQTT_TOPIC_STATUS = get_config_value(mqtt_config, 'topic.status', 'status')
-    
-    return mqtt_config

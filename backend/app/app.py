@@ -1,4 +1,4 @@
-from .services.mqtt.mqtt_service import send_message, device_unsubscribe, MQTT_TOPIC_LED
+from .services.mqtt.mqtt_service import send_message, device_unsubscribe
 from flask import request, jsonify
 from flask_cors import CORS
 from sqlalchemy import select
@@ -75,16 +75,17 @@ def removeDeviceFromDb():
         
         return '', 204  # 204 means "No Content"
 
-@app.route('/led/<state>')
-def led_control(state: str):
-    """
-    Control the LED on the device via MQTT.
-    Accepts 'on' or 'off' as state.
-    Sends MQTT message and returns status as JSON.
-    """
-    if state == 'on':
-        send_message(MQTT_TOPIC_LED, "on")
-    elif state == 'off':
-        send_message(MQTT_TOPIC_LED, "off")
-
-    return jsonify({"status": state})
+#
+#@app.route('/led/<state>')
+#def led_control(state: str):
+#    """
+#    Control the LED on the device via MQTT.
+#    Accepts 'on' or 'off' as state.
+#    Sends MQTT message and returns status as JSON.
+#    """
+#    if state == 'on':
+#        send_message(MQTT_TOPIC_LED, "on")
+#    elif state == 'off':
+#        send_message(MQTT_TOPIC_LED, "off")
+#
+#    return jsonify({"status": state})

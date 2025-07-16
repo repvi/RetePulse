@@ -1,7 +1,7 @@
 from .app_instance import app, db, socketio
 from multiprocessing import Process
 import platform
-from .services.mqtt.mqtt_service import set_device_subscriptions, start_mqtt_client, MQTT_BROKER
+from .services.mqtt.mqtt_service import set_device_subscriptions, start_mqtt_client, MQTTConfig
 from sqlalchemy import select, func, delete
 from .models.models import Device
 
@@ -39,7 +39,7 @@ def run_flask(host, port, debug) -> bool:
     """
 
     if start_mqtt_client():
-        print(f"MQTT broker IP address: {MQTT_BROKER}")
+        print(f"MQTT broker IP address: {MQTTConfig.BROKER}")
         print("Flask server starting")    
         if set_up_db():
             init_subscriptions()

@@ -1,5 +1,4 @@
 {
-    "version": "1.0.0",
     "mqtt-broker": "test.mosquitto.org",        
     "mqtt-broker-port": 1883,
     "topic": {
