@@ -1,8 +1,28 @@
 {
     "version": "1.0.0",
-    "react-host": "http://localhost:3000",
-    "react-port": 3000,
-    "database-uri": "sqlite:///users.db",
+    "environment": "development",
+    
+    "frontend": {
+        "react-host": "http://localhost:3000",
+        "react-port": 3000,
+        "api-url": "http://localhost:5000",
+        "socket-url": "http://localhost:5000"
+    },
+    
+    "backend": {
+        "flask": {
+            "host": "localhost",
+            "port": 5000,
+            "debug": true,
+            "secret-key": "supersecretkey"
+        },
+        "database-uri": "sqlite:///users.db",
+        "jwt": {
+            "secret-key": "asminview_venv_ap3x",
+            "expiration-hours": 24
+        }
+    },
+    
     "socketio": {
         "host": "http://localhost:5000",
         "port": 5000,
@@ -10,5 +30,20 @@
             "origins": "*",
             "supports_credentials": true
         }
+    },
+    
+    "security": {
+        "cors-origins": ["http://localhost:3000"],
+        "rate-limit": {
+            "enabled": true,
+            "requests-per-minute": 100
+        }
+    },
+    
+    "logging": {
+        "level": "INFO",
+        "file": "app.log",
+        "max-size": "10MB",
+        "backup-count": 5
     }
 }
