@@ -2,11 +2,9 @@
     "flask": {
         "host": "localhost",
         "port": 5000,
-        "debug": false,
-        "secret-key": "supersecretkey"
+        "debug": false
     },
     
-    "database-uri": "sqlite:///users.db",
     "jwt": {
         "secret-key": "asminview_venv_ap3x",
         "expiration-hours": 24

@@ -4,7 +4,7 @@ MQTT Configuration Module
 This module loads MQTT configuration from mqtt_config.json and provides
 configuration constants and utilities without circular import issues.
 """
-from app.config.config_helper import load_config, get_config_value
+from app.config_module.config_helper import load_config, get_config_value
 import platform
 
 current_os = platform.system()
