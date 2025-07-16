@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
-import config from "./config";
+import { FLASK_URL, SOCKETIO_URL } from "./config";
 import * as load_device from "../../componenets/DeviceDisplayUI/deviceLoad"
 import { data } from "react-router-dom";
 import { io } from 'socket.io-client';
 import { DeviceDisplayBox } from "../../componenets/DeviceDisplayUI/deviceLoad";
-
-// Connect to the backend Socket.IO server
-const SOCKET_URL = 'http://localhost:5000';
 
 export const token_key = 'access_token';
 export const user_id = 'user_id';
@@ -19,7 +16,7 @@ export const id_type = Object.freeze({
 // let ledState = false; // Initial LED state is off
 
 export async function getLoginAPI(username, password) {
-    const url = `${config.API_URL}/auth/login`;
+    const url = `${FLASK_URL}/auth/login`;
     try {
         const res = await fetch(url, {
             method: 'POST',
@@ -47,7 +44,7 @@ export async function getLogoutAPI() {
 }
 
 export async function getRegisterAPI(username, password, user_role) {
-    const url = `${config.API_URL}/auth/register`;
+    const url = `${FLASK_URL}/auth/register`;
     try {
         const res = await fetch(url, {
             method: 'POST',
@@ -74,7 +71,7 @@ export async function getRegisterAPI(username, password, user_role) {
  * @returns {Promise<Array<Object>>} Resolves to an array of device objects.
  */
 export async function getRegisteredDevicesAPI() {
-    const url = `${config.API_URL}/load/devices`;
+    const url = `${FLASK_URL}/load/devices`;
     try {
         console.log('Fetching registered devices from:', url);
         const res = await fetch(url, {
@@ -104,7 +101,7 @@ export async function getRegisteredDevicesAPI() {
 export function useSocketIOConnect(setDevices) {
   useEffect(() => {
     // create the socket with reconnection enabled
-    const socket = io(SOCKET_URL, {
+    const socket = io(SOCKETIO_URL, {
       reconnection: true,                // default is true
       reconnectionAttempts: Infinity,    // keep trying
       reconnectionDelay: 1000,           // initial delay
@@ -186,7 +183,7 @@ export function useSocketIOConnect(setDevices) {
 }
 
 export async function removeDeviceFromDB(name) {
-    const url = `${config.API_URL}/db/delete`;
+    const url = `${FLASK_URL}/db/delete`;
     try {
         const res = await fetch(url, {
             method: 'POST',

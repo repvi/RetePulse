@@ -1,14 +1,9 @@
 from .app_instance import app, db, socketio
-from multiprocessing import Process
-import platform
-from .services.mqtt.mqtt_service import set_device_subscriptions, start_mqtt_client, MQTTConfig
-from sqlalchemy import select, func, delete
-from .models.models import Device
+from .services.mqtt import set_device_subscriptions, start_mqtt_client, MQTTConfig
+from sqlalchemy import select
+from .models import Device
 
-current_os = platform.system()
-# Configuration constants
-
-def set_up_db() -> bool:
+def _set_up_db() -> bool:
     with app.app_context():
         try:
             devices = db.session.execute(select(Device)).scalars().all()
@@ -20,7 +15,7 @@ def set_up_db() -> bool:
             print(f"Database error: {str(e)}")
             return False
         
-def init_subscriptions() -> None:
+def _init_subscriptions() -> None:
     """
     Initialize MQTT subscriptions for devices.
     This function should be called after the MQTT client is started.
@@ -41,8 +36,8 @@ def run_flask(host, port, debug) -> bool:
     if start_mqtt_client():
         print(f"MQTT broker IP address: {MQTTConfig.BROKER}")
         print("Flask server starting")    
-        if set_up_db():
-            init_subscriptions()
+        if _set_up_db():
+            _init_subscriptions()
             socketio.run(app, host=host, port=port, debug=debug, use_reloader=False)
             return True
         else:

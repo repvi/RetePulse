@@ -1,5 +1,2 @@
-const config = {
-  API_URL: 'http://localhost:5000'
-};
-
-export default config;
+import { FLASK_URL, SOCKETIO_URL } from '../../config';
+export { FLASK_URL, SOCKETIO_URL }; // forward the SOCKETIO_URL for use in other files

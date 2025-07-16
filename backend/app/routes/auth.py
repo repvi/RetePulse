@@ -1,16 +1,16 @@
 from flask import Blueprint, jsonify, session, request, redirect, url_for, render_template, flash, make_response
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
-from flask_cors import CORS, cross_origin
-from ..extensions import db
+from flask_cors import CORS
+from app.extensions import db
 from app.models.models import User
-from ..utils.auth_utils import login_required
+from app.config import REACT_APP_URL
 
 auth_bp = Blueprint('auth', __name__)
-CORS(auth_bp, resources={r"/login": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+CORS(auth_bp, resources={r"/login": {"origins": REACT_APP_URL}}, supports_credentials=True)
 
 def cors_preflight_response():
     response = make_response()
-    response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
+    response.headers.add("Access-Control-Allow-Origin", REACT_APP_URL)
     response.headers.add("Access-Control-Allow-Headers", "Content-Type")
     response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
     response.headers['Access-Control-Allow-Credentials'] = 'true'

@@ -1,22 +1,26 @@
-from .services.mqtt.mqtt_service import send_message, device_unsubscribe
+from .services.mqtt import send_message, device_unsubscribe
 from flask import request, jsonify
 from flask_cors import CORS
 from sqlalchemy import select
 from .app_instance import app, db, socketio
-from .models.models import Device
+from .models import Device
+from .config import REACT_APP_URL
 from .start import run_flask
 
 # Placeholder for sensor data (can be updated elsewhere
 
+LOAD_DEVICES_ROUTE = '/load/devices'
+DB_DELETE_ROUTE = '/db/delete'
+
 CORS(app, 
     resources={
-        r"/load/devices": {"origins": "http://localhost:3000"},
-        r"/db/delete": {"origins": "http://localhost:3000"}
+        LOAD_DEVICES_ROUTE: {"origins": REACT_APP_URL},
+        DB_DELETE_ROUTE: {"origins": REACT_APP_URL}
     }, 
     supports_credentials=True
 )
 
-@app.route('/load/devices', methods=['POST', 'OPTIONS'])
+@app.route(LOAD_DEVICES_ROUTE, methods=['POST', 'OPTIONS'])
 def load_devices():
     """
     Load and return device list from database.
@@ -55,7 +59,7 @@ def load_devices():
             print(f"Database error: {str(e)}")
             return jsonify({"error": str(e)}), 500
 
-@app.route('/db/delete', methods=['POST', 'OPTIONS'])
+@app.route(DB_DELETE_ROUTE, methods=['POST', 'OPTIONS'])
 def removeDeviceFromDb():
     with app.app_context():
         if request.method == 'OPTIONS':
