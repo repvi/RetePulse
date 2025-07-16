@@ -16,6 +16,7 @@ export const id_type = Object.freeze({
 // let ledState = false; // Initial LED state is off
 
 export async function getLoginAPI(username, password) {
+    console.log(FLASK_URL);
     const url = `${FLASK_URL}/auth/login`;
     try {
         const res = await fetch(url, {

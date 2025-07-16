@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import './App.css';
-import Dashboard                  from './routes/dashboard';
-import Login                      from './routes/login';
-import Register                   from './routes/register';
-import UploadFirmware             from './routes/upload';
-import { RequireAdmin }           from './auth/required'; 
+import Dashboard                  from './routes/dashboard.jsx';
+import Login                      from './routes/login.jsx';
+import Register                   from './routes/register.jsx';
+import UploadFirmware             from './routes/upload.jsx';
+import { RequireAdmin }           from './auth/required.jsx'; 
 import { number } from "framer-motion";
 
 function AdminLayout() {

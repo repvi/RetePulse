@@ -1,3 +1,3 @@
-export const FLASK_URL = process.env.FLASK_URL;
-export const SOCKETIO_URL = process.env.SOCKETIO_URL;
-export const REACT_APP_API_URL = process.env.REACT_APP_API_URL;
+export const FLASK_URL = __FLASK_URL__;
+export const SOCKETIO_URL = __SOCKETIO_URL__;
+export const REACT_APP_API_URL = __REACT_APP_API_URL__;
