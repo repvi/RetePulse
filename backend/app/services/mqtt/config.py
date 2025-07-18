@@ -31,9 +31,8 @@ class MQTTConfig:
     PORT = get_config_value(mqtt_config, 'mqtt-broker-port', 1883)
     TOPIC_LED = get_config_value(mqtt_config, 'topic.led', 'led')
     TOPIC_OTA = get_config_value(mqtt_config, 'topic.ota', 'ota')
-    TOPIC_SENSOR = get_config_value(mqtt_config, 'topic.sensor', 'sensor')
     TOPIC_SET_DEVICE = get_config_value(mqtt_config, 'topic.device-info', 'device_info')
-    TOPIC_DEVICE_RECONFIGURE = get_config_value(mqtt_config, 'send-topic.device-reconfigure', 'device_reconfigure')
+    TOPIC_DEVICE_RECONFIGURE = get_config_value(mqtt_config, 'send-topic.control', 'control')
     TOPIC_STATUS = get_config_value(mqtt_config, 'topic.status', 'status')
 
 def reload_config():
@@ -46,9 +45,8 @@ def reload_config():
     MQTTConfig.PORT = get_config_value(mqtt_config, 'mqtt-broker-port', 1883)
     MQTTConfig.TOPIC_LED = get_config_value(mqtt_config, 'topic.led', 'led')
     MQTTConfig.TOPIC_OTA = get_config_value(mqtt_config, 'topic.ota', 'ota')
-    MQTTConfig.TOPIC_SENSOR = get_config_value(mqtt_config, 'topic.sensor', 'sensor')
     MQTTConfig.TOPIC_SET_DEVICE = get_config_value(mqtt_config, 'topic.device-info', 'device_info')
-    MQTTConfig.TOPIC_DEVICE_RECONFIGURE = get_config_value(mqtt_config, 'send-topic.device-reconfigure', 'device_reconfigure')
+    MQTTConfig.TOPIC_DEVICE_RECONFIGURE = get_config_value(mqtt_config, 'send-topic.device-reconfigure', 'control')
     MQTTConfig.TOPIC_STATUS = get_config_value(mqtt_config, 'topic.status', 'status')
 
     return mqtt_config

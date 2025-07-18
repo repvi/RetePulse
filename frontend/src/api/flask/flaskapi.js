@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FLASK_URL, SOCKETIO_URL } from "./config";
-import * as load_device from "../../componenets/DeviceDisplayUI/deviceLoad"
-import { data } from "react-router-dom";
 import { io } from 'socket.io-client';
-import { DeviceDisplayBox } from "../../componenets/DeviceDisplayUI/deviceLoad";
 
 export const token_key = 'access_token';
 export const user_id = 'user_id';
@@ -13,11 +10,15 @@ export const id_type = Object.freeze({
   viewer: 2,
 });
 
+function getFullFLaskURL(route) {
+    return `${FLASK_URL}${route}`;
+}
+
 // let ledState = false; // Initial LED state is off
 
 export async function getLoginAPI(username, password) {
     console.log(FLASK_URL);
-    const url = `${FLASK_URL}/auth/login`;
+    const url = getFullFLaskURL('/auth/login');
     try {
         const res = await fetch(url, {
             method: 'POST',
@@ -45,7 +46,7 @@ export async function getLogoutAPI() {
 }
 
 export async function getRegisterAPI(username, password, user_role) {
-    const url = `${FLASK_URL}/auth/register`;
+    const url = getFullFLaskURL('/auth/register');
     try {
         const res = await fetch(url, {
             method: 'POST',
@@ -72,7 +73,7 @@ export async function getRegisterAPI(username, password, user_role) {
  * @returns {Promise<Array<Object>>} Resolves to an array of device objects.
  */
 export async function getRegisteredDevicesAPI() {
-    const url = `${FLASK_URL}/load/devices`;
+    const url = getFullFLaskURL('/load/devices');
     try {
         console.log('Fetching registered devices from:', url);
         const res = await fetch(url, {

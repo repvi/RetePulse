@@ -94,3 +94,60 @@
   color: black;
   z-index: 10000;                /* above your app UI */
 }
+
+/* Toggle control styles */
+.control-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 10px;
+  padding: 5px;
+  user-select: none;
+}
+
+.control-toggle-arrow {
+  margin-top: 5px;
+  font-size: 16px;
+  transition: transform 0.2s ease;
+  color: #666;
+}
+
+.control-toggle-arrow.collapsed {
+  transform: rotate(-90deg);
+}
+
+.control-toggle-arrow.expanded {
+  transform: rotate(0deg);
+}
+
+.control-toggle-text {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Device info styles */
+.device-main-info {
+  display: flex;
+  justify-content: space-between;
+}
+
+.device-display-sub-info-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.device-last-updated-container {
+  text-align: right;
+}
+
+.device-display-info {
+  cursor: pointer;
+}
+
+.device-control-box {
+  display: flex;
+  flex-direction: column;
+  height: 150px;
+}

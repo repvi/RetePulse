@@ -8,6 +8,6 @@
     },
 
     "send-topic": {
-        "device-reconfigure": "device_reconfigure"
+        "control": "control"
     }
 }

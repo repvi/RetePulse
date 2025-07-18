@@ -1,21 +1,21 @@
 import React, { useState } from "react";
-import { useNavigate } from 'react-router-dom'
 import styles from "./deviceLoad.module.css"; // Adjust the path as needed
-import { DeviceUART } from "./deviceDataCircle/dataCircle";
 import useNavigateWithBacktrack from "../../backtrack";
 import { user_id, id_type, removeDeviceFromDB } from "../../api/flask/flaskapi"; // Adjust the import path as needed
+import { DeviceUART } from "../DeviceDisplayUI/deviceDataCircle/dataCircle";
+import { controlDeviceOptions } from "./deviceControlBox/controlOptions";
 
 function loadDeviceBlank() {
     return <div className="device-sensor-data"></div>;
 }
 
-export function getDeviceType(data = String) {
-    switch (data.sensor_type) {
-      case 'uart':
-        return <DeviceUART progress={65} />
-      default:
-        return loadDeviceBlank();
-    }
+function getDeviceType(data = String) {
+  switch (data.sensor_type) {
+    case 'uart':
+      return <DeviceUART progress={65} />
+    default:
+      return loadDeviceBlank();
+  }
 }
 
 function FrontText({ device, onFlip = () => {} }) {
@@ -25,20 +25,16 @@ function FrontText({ device, onFlip = () => {} }) {
       className={styles['device-display-info']}
       onClick={onFlip}
       role="button"
-      style={{cursor: "pointer"}}
     >
-      <div
-        className={styles['device-main-info']}
-        style={{ display: "flex", justifyContent: "space-between" }}
-      >
+      <div className={styles['device-main-info']}>
         <span className={styles['device-serial-name']}>{name}</span>
       </div>
       <div className={styles['device-display-sub-info']}>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div className={styles['device-display-sub-info-row']}>
           <span className={styles['device-model']}>{model}</span>
           <span className={styles['device-status']}>{status}</span>
         </div>
-        <div style={{ textAlign: "right" }}>
+        <div className={styles['device-last-updated-container']}>
           <span className={styles['device-last-updated']}>{"Last updated: " + last_updated}</span>
         </div>
       </div>
@@ -80,7 +76,9 @@ export function BackText({name, onCancel = () => {} }) {
 export function DeviceDisplayBox({device = {}}) {
   const { name, model, last_updated, status, sensor_type } = device;
   const children = getDeviceType({sensor_type});
+  const controlOption = controlDeviceOptions({name});
   const [flipped, setFlipped] = useState(false);        // added
+  const [showControls, setShowControls] = useState(false); // added for control visibility
 
   const isAdmin = localStorage.getItem(user_id) == id_type.admin; // Check if the user is an admin
 
@@ -98,8 +96,23 @@ export function DeviceDisplayBox({device = {}}) {
       </div>
 
       <div className={styles['device-configuration-box']}>
+        {/* Toggle arrow for control area */}
+        <div 
+          onClick={() => setShowControls(!showControls)}
+          className={styles['control-toggle']}
+        >
+          <span className={styles['control-toggle-text']}>Device Controls</span>
+          <span 
+            className={`${styles['control-toggle-arrow']} ${showControls ? styles['expanded'] : styles['collapsed']}`}
+          >
+            ▼
+          </span>
+        </div>
+        
+        {showControls && (
+          <div className={styles['device-control-area']}>{controlOption}</div>
+        )}
         <div className={styles['device-sensor-area']}>{children}</div>{/* Can possibly improve here */}
-        <div className={styles['device-control-area']}></div>
         {/* You can render children here if you want to pass custom content */}
       </div>
     </div>

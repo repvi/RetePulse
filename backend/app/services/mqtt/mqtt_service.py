@@ -85,7 +85,6 @@ def device_connection_info(data) -> None:
                 db.session.add(new_device)
 
             db.session.commit()
-            set_device_subscriptions(device_name)
             # Emit update after successful database operation
             socketio.emit('device_update', {
                 'device_name': device_name,
@@ -110,19 +109,37 @@ def device_set_status(data) -> None:
             parsed = json.loads(data.payload)
             status = parsed['status']
             existing_device = db.session.execute(select(Device).where(Device.name == name)).scalar_one_or_none()
-            if existing_device and existing_device.status is not status:
+            if existing_device and existing_device.status != status:
                 existing_device.status = status
                 db.session.commit()
                 print(f"Updated device {name} status to {status}")
+                socketio.emit('device_status_update', {
+                    'name': name,
+                    'status': status
+                })
             else:
                 print(f"Device {name} not found in database, cannot update status.")
-            socketio.emit('device_status_update', {
-                'name': name,
-                'status': status
-            })
+                device_send_reconfigure(name)
         except Exception as e:
             print(f"Database error in device_set_status: {str(e)}")
             db.session.rollback()
+
+def device_send_reconfigure(name: str) -> None:
+    """
+    Send a reconfigure command to the device.
+    """
+    message = json.dumps({"command": "reconfigure"})
+    send_message(f"{MQTTConfig.TOPIC_DEVICE_RECONFIGURE}/{name}", message)
+    print(f"Sent reconfigure command to device: {name}")
+
+def device_send_gpio(name: str, type: str, gpio: int) -> None:
+    """
+    Send a GPIO command to the device.
+    """
+    message = json.dumps({"command": "gpio", "set": gpio, "type": type})
+    # add conditions to check what other data to send to the device
+    send_message(f"{MQTTConfig.TOPIC_DEVICE_RECONFIGURE}/{name}", message)
+    print(f"Sent GPIO command to device: {name}, GPIO: {gpio}")
 
 def device_sensor_data(data) -> None:
     pass
@@ -149,7 +166,8 @@ def process_messages() -> None:
             else:
                 print(f"No processing function found for topic: {data.topic}")
                 # request as if it is a completely new device
-                send_message(MQTTConfig.TOPIC_DEVICE_RECONFIGURE, "reset")
+                reset_message = json.dumps({"command": "reset"})
+                send_message(MQTTConfig.TOPIC_DEVICE_RECONFIGURE, reset_message)
 
     except Exception as e:
         print(f"JSON parse error: {e}")
@@ -158,8 +176,8 @@ def on_connect(client, userdata, flags, rc) -> None:
     """MQTT callback for successful connection."""
     client_id = client._client_id.decode()
     print(f"Device {client_id} connected with result code {rc}")
-    #client.subscribe(MQTT_TOPIC_SENSOR + f"/{client_id}")
-    client.subscribe(MQTTConfig.TOPIC_SET_DEVICE)
+    client.subscribe(MQTTConfig.TOPIC_SET_DEVICE) # heavier version for status updates
+    client.subscribe(MQTTConfig.TOPIC_STATUS) # for realtime status updates
 
 def on_message(client, userdata, msg) -> None:
     """
