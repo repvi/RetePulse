@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FLASK_URL, SOCKETIO_URL } from "./config";
 import { io } from 'socket.io-client';
+import { prettyDOM } from "@testing-library/dom";
 
 export const token_key = 'access_token';
 export const user_id = 'user_id';
@@ -198,5 +199,32 @@ export async function removeDeviceFromDB(name) {
         return { success: true, message: 'Login successful' };
     } catch (error) {
         console.error("Error in removeDeviceFromDB: ", error);
+    }
+}
+
+export async function controlDeviceAPI(name, command, additionalData = {}) {
+    const url = `${FLASK_URL}/device/control`;
+    try {
+        const payload = {
+            name,
+            command,
+            ...additionalData
+        };
+
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
+        // Backend returns 204 No Content, so no JSON to parse
+        return { success: true, message: 'Control command sent successfully' };
+    } catch (error) {
+        console.error("Error in controlDeviceAPI:", error);
+        return { success: false, message: error.message || 'Failed to send control command' };
     }
 }

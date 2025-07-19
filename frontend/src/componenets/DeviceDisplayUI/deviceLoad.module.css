@@ -40,6 +40,7 @@
     align-self: flex;
     width: calc(100% - var(--inner-main-card-padding-value));
     border: var(--device-display-border) solid var(--device-display-border-color);
+    height: 180px;
 }
 
 .device-configuration-box {

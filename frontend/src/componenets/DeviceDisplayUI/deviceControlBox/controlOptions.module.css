@@ -196,6 +196,42 @@
   transform: translateY(1px);
 }
 
+/* GPIO state button variants */
+.gpio-state-off {
+  background-color: #007bff !important;
+  color: #fff !important;
+  border-color: #007bff !important;
+}
+
+.gpio-state-off:hover {
+  background-color: #0056b3 !important;
+  color: #fff !important;
+  border-color: #0056b3 !important;
+}
+
+.gpio-state-on {
+  background-color: #fff !important;
+  color: #007bff !important;
+  border-color: #007bff !important;
+}
+
+.gpio-state-on:hover {
+  background-color: #f8f9fa !important;
+  color: #0056b3 !important;
+  border-color: #0056b3 !important;
+}
+
+/* Error message styling */
+.error-message {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
 /* Submit button */
 .device-control-button {
   padding: 12px 24px;

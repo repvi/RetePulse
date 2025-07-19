@@ -3,7 +3,7 @@ import styles from "./deviceLoad.module.css"; // Adjust the path as needed
 import useNavigateWithBacktrack from "../../backtrack";
 import { user_id, id_type, removeDeviceFromDB } from "../../api/flask/flaskapi"; // Adjust the import path as needed
 import { DeviceUART } from "../DeviceDisplayUI/deviceDataCircle/dataCircle";
-import { controlDeviceOptions } from "./deviceControlBox/controlOptions";
+import { ControlDeviceOptions } from "./deviceControlBox/controlOptions";
 
 function loadDeviceBlank() {
     return <div className="device-sensor-data"></div>;
@@ -76,9 +76,19 @@ export function BackText({name, onCancel = () => {} }) {
 export function DeviceDisplayBox({device = {}}) {
   const { name, model, last_updated, status, sensor_type } = device;
   const children = getDeviceType({sensor_type});
-  const controlOption = controlDeviceOptions({name});
   const [flipped, setFlipped] = useState(false);        // added
   const [showControls, setShowControls] = useState(false); // added for control visibility
+  const [controlKey, setControlKey] = useState(0); // added for resetting controls
+
+  const handleToggleControls = () => {
+    if (showControls) {
+      // When hiding controls, reset them by changing the key
+      setControlKey(prev => prev + 1);
+    }
+    setShowControls(!showControls);
+  };
+
+  const controlOption = <ControlDeviceOptions name={name} key={controlKey} />;
 
   const isAdmin = localStorage.getItem(user_id) == id_type.admin; // Check if the user is an admin
 
@@ -98,7 +108,7 @@ export function DeviceDisplayBox({device = {}}) {
       <div className={styles['device-configuration-box']}>
         {/* Toggle arrow for control area */}
         <div 
-          onClick={() => setShowControls(!showControls)}
+          onClick={handleToggleControls}
           className={styles['control-toggle']}
         >
           <span className={styles['control-toggle-text']}>Device Controls</span>

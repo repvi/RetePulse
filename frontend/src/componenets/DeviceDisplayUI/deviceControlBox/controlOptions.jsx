@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import styles from "./controlOptions.module.css"; // Adjust the path as needed
+import { controlDeviceAPI } from "../../../api/flask/flaskapi";
 
-function GPIOConfigOptions({ onConfigComplete, onReset }) {
+function GPIOConfigOptions({ onConfigComplete, onReset, onDataUpdate }) {
   const [pinNumber, setPinNumber] = useState('');
   const [direction, setDirection] = useState('');
 
@@ -21,6 +22,16 @@ function GPIOConfigOptions({ onConfigComplete, onReset }) {
     const isComplete = pinNumber !== '' && direction !== '';
     onConfigComplete(isComplete);
   }, [pinNumber, direction, onConfigComplete]);
+
+  // Update parent with current data
+  React.useEffect(() => {
+    if (onDataUpdate) {
+      onDataUpdate({
+        pin: pinNumber,
+        direction: direction
+      });
+    }
+  }, [pinNumber, direction, onDataUpdate]);
 
   return (
     <div className={styles["gpio-config-options"]}>
@@ -46,7 +57,7 @@ function GPIOConfigOptions({ onConfigComplete, onReset }) {
           value={direction}
           onChange={(e) => setDirection(e.target.value)}
         >
-          <option value="" disabled hidden>-- Select Direction --</option>
+          <option value="" disabled hidden>Select Direction</option>
           <option value="input">Input</option>
           <option value="output">Output</option>
         </select>
@@ -55,14 +66,16 @@ function GPIOConfigOptions({ onConfigComplete, onReset }) {
   );
 }
 
-function GPIOSetStateOptions({ onStateComplete, onReset }) {
+function GPIOSetStateOptions({ onStateComplete, onReset, onDataUpdate }) {
+  const [pinNumber, setPinNumber] = useState('');
   const [isOn, setIsOn] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(true);
+  const [hasInteracted, setHasInteracted] = useState(false);
   
   // Reset function to clear state
   const resetState = () => {
+    setPinNumber('');
     setIsOn(false);
-    setHasInteracted(true);
+    setHasInteracted(false);
   };
 
   // Expose reset function to parent
@@ -77,18 +90,41 @@ function GPIOSetStateOptions({ onStateComplete, onReset }) {
     }
   };
 
-  // Notify parent when state is complete (user has interacted with the button)
+  // Notify parent when state is complete (pin selected is sufficient, default is "off")
   React.useEffect(() => {
-    onStateComplete(hasInteracted);
-  }, [hasInteracted, onStateComplete]);
+    const isComplete = pinNumber !== '';
+    onStateComplete(isComplete);
+  }, [pinNumber, onStateComplete]);
+
+  // Update parent with current data
+  React.useEffect(() => {
+    if (onDataUpdate) {
+      onDataUpdate({
+        pin: pinNumber,
+        state: isOn ? 'on' : 'off'
+      });
+    }
+  }, [pinNumber, isOn, onDataUpdate]);
 
   return (
     <div className={styles["gpio-set-state-options"]}>
-      <span>GPIO Set State Options</span>
+      <div className={styles["gpio-config-field"]}>
+        <label htmlFor="gpio-state-pin">Pin Number:</label>
+        <input
+          type="number"
+          id="gpio-state-pin"
+          name="gpio-state-pin"
+          min="0"
+          max="39"
+          placeholder="0-38"
+          value={pinNumber}
+          onChange={(e) => setPinNumber(e.target.value)}
+        />
+      </div>
       <div className={styles["gpio-state-buttons"]}>
         <button 
           type="button" 
-          className={styles["gpio-state-button"]}
+          className={`${styles["gpio-state-button"]} ${isOn ? styles["gpio-state-on"] : styles["gpio-state-off"]}`}
           value={isOn ? "on" : "off"}
           onClick={toggleState}
         >
@@ -99,10 +135,12 @@ function GPIOSetStateOptions({ onStateComplete, onReset }) {
   );
 }
 
-function GPIOControlOptions({ onGPIOComplete, onReset }) {
+function GPIOControlOptions({ onGPIOComplete, onReset, onDataUpdate }) {
   const [gpioOption, setGpioOption] = useState('');
   const [configComplete, setConfigComplete] = useState(false);
   const [stateComplete, setStateComplete] = useState(false);
+  const [configData, setConfigData] = useState({});
+  const [stateData, setStateData] = useState({});
   const configResetRef = React.useRef();
   const stateResetRef = React.useRef();
   
@@ -111,6 +149,8 @@ function GPIOControlOptions({ onGPIOComplete, onReset }) {
     setGpioOption('');
     setConfigComplete(false);
     setStateComplete(false);
+    setConfigData({});
+    setStateData({});
     // Reset child components if they exist
     if (configResetRef.current) {
       configResetRef.current.reset();
@@ -130,7 +170,21 @@ function GPIOControlOptions({ onGPIOComplete, onReset }) {
     // Reset completion states when changing options
     setConfigComplete(false);
     setStateComplete(false);
+    setConfigData({});
+    setStateData({});
   };
+
+  // Update parent with current GPIO data
+  React.useEffect(() => {
+    const currentData = gpioOption === 'configure' ? configData : stateData;
+    const dataWithSet = {
+      ...currentData,
+      set: gpioOption === 'configure' ? 'configure' : 'state'
+    };
+    if (onDataUpdate) {
+      onDataUpdate(dataWithSet);
+    }
+  }, [gpioOption, configData, stateData, onDataUpdate]);
 
   // Check if current GPIO option is complete
   const isGPIOComplete = () => {
@@ -154,7 +208,7 @@ function GPIOControlOptions({ onGPIOComplete, onReset }) {
           value={gpioOption}
           onChange={handleGpioOptionChange}
         >
-          <option value="">-- Select Option --</option>
+          <option value="" hidden></option>
           <option value="configure">Configure</option>
           <option value="state">State</option>
         </select>
@@ -164,43 +218,75 @@ function GPIOControlOptions({ onGPIOComplete, onReset }) {
         <GPIOConfigOptions 
           onConfigComplete={setConfigComplete} 
           onReset={configResetRef}
+          onDataUpdate={setConfigData}
         />
       )}
       {gpioOption === 'state' && (
         <GPIOSetStateOptions 
           onStateComplete={setStateComplete} 
           onReset={stateResetRef}
+          onDataUpdate={setStateData}
         />
       )}
     </div>
   );
 }
 
-export function controlDeviceOptions({name}) {
+export function ControlDeviceOptions({name}) {
   const [formData, setFormData] = useState({ device_control: '' });
   const [error, setError] = useState('');
   const [gpioComplete, setGpioComplete] = useState(false);
+  const [gpioData, setGpioData] = useState({}); // Store GPIO form data
   const gpioResetRef = React.useRef();
   
   const handleDeviceControlChange = e => {
     setFormData(f => ({ ...f, device_control: e.target.value }));
     // Reset GPIO completion when changing main control
     setGpioComplete(false);
+    setGpioData({});
   }
 
-  const handleSubmit =  async (e) => {
+  // Callback to receive GPIO data from child components
+  const handleGpioDataUpdate = (data) => {
+    setGpioData(data);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('')
+    setError('');
     try {
-      // api to send a message to the device through mqtt in the backend
+      let command = formData.device_control;
+      let additionalData = {};
+
+      if (command === 'restart') {
+        // For restart, just send the command
+        command = 'reset'; // Map restart to reset command
+      } else if (command === 'gpio') {
+        // For GPIO, include the GPIO-specific data
+        additionalData = {
+          set: gpioData.set || 'state', // default to 'state' if not specified
+          pin: gpioData.pin,
+          state: gpioData.state
+        };
+      }
+
+      // Call the API
+      const result = await controlDeviceAPI(name, command, additionalData);
       
-      // Reset all form values after successful submission
-      setFormData({ device_control: '' });
-      setGpioComplete(false);
-      
-      // Reset GPIO options if they exist
-      if (gpioResetRef.current) {
-        gpioResetRef.current.reset();
+      if (result.success) {
+        console.log('Command sent successfully:', result.message);
+        
+        // Reset all form values after successful submission
+        setFormData({ device_control: '' });
+        setGpioComplete(false);
+        setGpioData({});
+        
+        // Reset GPIO options if they exist
+        if (gpioResetRef.current) {
+          gpioResetRef.current.reset();
+        }
+      } else {
+        setError(result.message || 'Failed to send command');
       }
       
     } catch (err) {
@@ -220,6 +306,7 @@ export function controlDeviceOptions({name}) {
     <div className={styles["device-control-box"]}>
       <form onSubmit={handleSubmit}>
         <label className={styles["device-control-label"]}>
+          <span>Device Control</span>
           <select
             id="device_control"
             name="device_control"
@@ -232,7 +319,6 @@ export function controlDeviceOptions({name}) {
                 Select Control
               </option>
             )}
-            <option value=""></option>
             <option value="gpio">GPIO</option>
             <option value="restart">Restart</option>
           </select>
@@ -242,6 +328,7 @@ export function controlDeviceOptions({name}) {
           <GPIOControlOptions 
             onGPIOComplete={setGpioComplete} 
             onReset={gpioResetRef}
+            onDataUpdate={handleGpioDataUpdate}
           />
         )}
         
@@ -249,6 +336,12 @@ export function controlDeviceOptions({name}) {
           <button type="submit" className={styles["device-control-button"]}>
             Send
           </button>
+        )}
+        
+        {error && (
+          <div className={styles["error-message"]}>
+            {error}
+          </div>
         )}
       </form>
     </div>

@@ -68,10 +68,6 @@ export default function Dashboard() {
             <h3 style={{ textAlign: "left" }}>Registered Devices</h3>
               
             <DeviceDisplayArea devices={devices} />
-
-            <button className={`${styles['toggle-button']} ${styles['off']}`} id={styles['toggle-button']}>
-              LED
-            </button>
           </div>
         </div>
 

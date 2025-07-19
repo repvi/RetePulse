@@ -1,4 +1,4 @@
-from .services.mqtt import send_message, device_unsubscribe
+from .services.mqtt import send_message, device_unsubscribe, MQTTConfig
 from flask import request, jsonify
 from flask_cors import CORS
 from sqlalchemy import select
@@ -6,16 +6,18 @@ from .app_instance import app, db, socketio
 from .models import Device
 from .config import REACT_APP_URL
 from .start import run_flask
-
+import json
 # Placeholder for sensor data (can be updated elsewhere
 
 LOAD_DEVICES_ROUTE = '/load/devices'
 DB_DELETE_ROUTE = '/db/delete'
+DEVICE_CONTROL_ROUTE = '/device/control'
 
 CORS(app, 
     resources={
         LOAD_DEVICES_ROUTE: {"origins": REACT_APP_URL},
-        DB_DELETE_ROUTE: {"origins": REACT_APP_URL}
+        DB_DELETE_ROUTE: {"origins": REACT_APP_URL},
+        DEVICE_CONTROL_ROUTE: {"origins": REACT_APP_URL}
     }, 
     supports_credentials=True
 )
@@ -79,6 +81,37 @@ def removeDeviceFromDb():
         
         return '', 204  # 204 means "No Content"
 
+@app.route(DEVICE_CONTROL_ROUTE, methods=['POST', 'OPTIONS'])
+def control_device():
+    with app.app_context():
+        if request.method == 'OPTIONS':
+            return jsonify({"message": "CORS preflight response"}), 200
+
+        data = request.get_json() or {}
+        command = data.get('command')
+        name = data.get('name')
+        send_topic = f"{MQTTConfig.TOPIC_DEVICE_RECONFIGURE}/{name}"
+
+        if command == "reconfigure":
+            print(f"Sending reconfigure command to device: {name}")
+            send_message(send_topic, json.dumps({"command": "reconfigure"}))
+        elif command == "gpio":
+            print(f"Sending data to device: {name}, command: {command}, data: {data}")
+            send_message(send_topic, json.dumps({
+                "command": "gpio", 
+                "set": data.get('set'), 
+                "pin": data.get('pin'), 
+                "state": data.get('state')
+            }))
+        elif command == "ota_update":
+            print(f"Sending OTA update command to device: {name}")
+            # Assuming the OTA update command is sent to the same topic
+            send_message(send_topic, json.dumps({"command": "ota_update"}))
+        elif command == "reset":
+            print(f"Sending reset command to device: {name}")
+            send_message(send_topic, json.dumps({"command": "reset"}))
+
+        return '', 204  # 204 means "No Content"
 #
 #@app.route('/led/<state>')
 #def led_control(state: str):
