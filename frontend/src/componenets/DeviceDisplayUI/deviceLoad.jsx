@@ -20,6 +20,25 @@ function getDeviceType(data = String) {
 
 function FrontText({ device, onFlip = () => {} }) {
   const { name, model, last_updated, status } = device;
+  
+  // Function to get status class based on status text
+  const getStatusClass = (status) => {
+    if (!status) return '';
+    const statusLower = status.toLowerCase();
+
+    if (statusLower.includes('disconnected')) return 'status-disconnected';
+    if (statusLower.includes('reconnecting')) return 'status-reconnnecting';
+    if (statusLower.includes('connected')) return 'status-connected';
+    if (statusLower.includes('warning')) return 'status-warning';
+    if (statusLower.includes('error') || statusLower.includes('failed')) return 'status-error';
+    if (statusLower.includes('resetting') || statusLower.includes('reset')) return 'status-resetting';
+    if (statusLower.includes('updating') || statusLower.includes('update')) return 'status-updating';
+    if (statusLower.includes('offline') || statusLower.includes('disconnected')) return 'status-offline';
+    if (statusLower.includes('idle') || statusLower.includes('standby')) return 'status-idle';
+    
+    return 'status-default';
+  };
+  
   return (
     <div 
       className={styles['device-display-info']}
@@ -32,7 +51,7 @@ function FrontText({ device, onFlip = () => {} }) {
       <div className={styles['device-display-sub-info']}>
         <div className={styles['device-display-sub-info-row']}>
           <span className={styles['device-model']}>{model}</span>
-          <span className={styles['device-status']}>{status}</span>
+          <span className={`${styles['device-status']} ${styles[getStatusClass(status)]}`}>{status}</span>
         </div>
         <div className={styles['device-last-updated-container']}>
           <span className={styles['device-last-updated']}>{"Last updated: " + last_updated}</span>
@@ -108,22 +127,27 @@ export function DeviceDisplayBox({device = {}}) {
       <div className={styles['device-configuration-box']}>
         {/* Toggle arrow for control area */}
         <div 
-          onClick={handleToggleControls}
           className={styles['control-toggle']}
         >
-          <span className={styles['control-toggle-text']}>Device Controls</span>
-          <span 
-            className={`${styles['control-toggle-arrow']} ${showControls ? styles['expanded'] : styles['collapsed']}`}
+          <div 
+            onClick={handleToggleControls}
+            className={styles['control-toggle-header']}
           >
-            ▼
-          </span>
+            <div className={styles['control-toggle-text']}>Device Controls</div>
+            <div 
+              className={`${styles['control-toggle-arrow']} ${showControls ? styles['expanded'] : styles['collapsed']}`}
+            >
+              ▼
+            </div>
+          </div>
+          
+          {showControls && (
+            <div className={styles['device-control-area']}>{controlOption}</div>
+          )}
         </div>
         
-        {showControls && (
-          <div className={styles['device-control-area']}>{controlOption}</div>
-        )}
-        <div className={styles['device-sensor-area']}>{children}</div>{/* Can possibly improve here */}
-        {/* You can render children here if you want to pass custom content */}
+        {/* Device sensor area comes after controls */}
+        <div className={styles['device-sensor-area']}>{children}</div>
       </div>
     </div>
   );

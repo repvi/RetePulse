@@ -60,30 +60,79 @@ export default function Dashboard() {
   useSocketIOConnect(setDevices);
   
   return (
-    <div className={"dashboard-page"}>
+    <motion.div 
+      className={"dashboard-page"}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8 }}
+    >
       <main>
-        <div className={styles['container']}>
-          <h2 id="dashboard-title">Dashboard</h2>
-          <div className={styles['inner-main-card']}>
-            <h3 style={{ textAlign: "left" }}>Registered Devices</h3>
+        <motion.div 
+          className={styles['container']}
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+        >
+          <motion.div
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <h2 id="dashboard-title">
+              Dashboard
+            </h2>
+          </motion.div>
+          
+          <motion.div 
+            className={styles['inner-main-card']}
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.7, delay: 0.4 }}
+          >
+            <div className={styles['devices-header']}>
+              <h3 style={{ textAlign: "left" }}>
+                <span className={styles['devices-icon']}>🔌</span>
+                Registered Devices
+                <span className={styles['device-count']}>({devices.length})</span>
+              </h3>
+            </div>
               
             <DeviceDisplayArea devices={devices} />
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        <div className={styles['bottom-container']}>
-          <div className={styles['upload']} style={{ margin: 10, textAlign: "center" }}>
+        <motion.div 
+          className={styles['bottom-container']}
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.7, delay: 0.6 }}
+        >
+          <motion.div 
+            className={styles['upload']} 
+            style={{ margin: 10, textAlign: "center" }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
             {/* Use <a href="/upload"> if not using React Router */}
-            <Link to="/upload">Upload Firmware</Link>
-          </div>
-          <div className={styles['logout']} style={{ margin: 10, textAlign: "center" }}>
+            <Link to="/upload">
+              <span className={styles['action-icon']}>📤</span>
+              Upload Firmware
+            </Link>
+          </motion.div>
+          <motion.div 
+            className={styles['logout']} 
+            style={{ margin: 10, textAlign: "center" }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
             <a href="/logout" style={{ textAlign: "center" }}>
+              <span className={styles['action-icon']}>🚪</span>
               Logout
             </a>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </main>
-    </div>
+    </motion.div>
     /* 
     <footer>
         <div class="footer-content" style="text-align: center;">

@@ -303,47 +303,50 @@ export function ControlDeviceOptions({name}) {
   };
 
   return (
-    <div className={styles["device-control-box"]}>
-      <form onSubmit={handleSubmit}>
-        <label className={styles["device-control-label"]}>
-          <span>Device Control</span>
-          <select
-            id="device_control"
-            name="device_control"
-            placeholder="Not provided"
-            value={formData.device_control}
-            onChange={handleDeviceControlChange}
-          >
-            {formData.device_control === '' && (
-              <option value="" disabled hidden>
-                Select Control
-              </option>
-            )}
-            <option value="gpio">GPIO</option>
-            <option value="restart">Restart</option>
-          </select>
-        </label>
-        
-        {formData.device_control === 'gpio' && (
-          <GPIOControlOptions 
-            onGPIOComplete={setGpioComplete} 
-            onReset={gpioResetRef}
-            onDataUpdate={handleGpioDataUpdate}
-          />
-        )}
-        
-        {shouldShowSubmitButton() && (
-          <button type="submit" className={styles["device-control-button"]}>
-            Send
-          </button>
-        )}
-        
-        {error && (
-          <div className={styles["error-message"]}>
-            {error}
-          </div>
-        )}
-      </form>
+    <div className={styles["control-device-wrapper"]}>
+      <div className={styles["device-control-box"]}>
+        <form onSubmit={handleSubmit} className={styles["control-device-form"]}>
+          <label className={styles["device-control-label"]}>
+            <select
+              id="device_control"
+              name="device_control"
+              placeholder="Not provided"
+              value={formData.device_control}
+              onChange={handleDeviceControlChange}
+            >
+              {formData.device_control === '' && (
+                <option value="" disabled hidden>
+                  Select Control
+                </option>
+              )}
+              <option value="gpio">GPIO</option>
+              <option value="restart">Restart</option>
+            </select>
+          </label>
+          
+          {formData.device_control === 'gpio' && (
+            <div className={styles["gpio-wrapper"]}>
+              <GPIOControlOptions 
+                onGPIOComplete={setGpioComplete} 
+                onReset={gpioResetRef}
+                onDataUpdate={handleGpioDataUpdate}
+              />
+            </div>
+          )}
+          
+          {shouldShowSubmitButton() && (
+            <button type="submit" className={styles["device-control-button"]}>
+              Send
+            </button>
+          )}
+          
+          {error && (
+            <div className={styles["error-message"]}>
+              {error}
+            </div>
+          )}
+        </form>
+      </div>
     </div>
   );
 }

@@ -8,7 +8,7 @@ def _set_up_db() -> bool:
         try:
             devices = db.session.execute(select(Device)).scalars().all()
             for device in devices:
-                device.status = 'dissconnected'  # Set status to disconnected
+                device.status = 'disconnected'  # Set status to disconnected
             db.session.commit()  # Commit changes to the database
             return True
         except Exception as e:
