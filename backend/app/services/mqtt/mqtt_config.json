@@ -1,5 +1,5 @@
 {
-    "mqtt-broker": "test.mosquitto.org",
+    "mqtt-broker": "broker.emqx.io",
     "mqtt-broker-port": 1883,
     "topic": {
         "ota": "ota",

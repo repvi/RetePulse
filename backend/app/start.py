@@ -44,7 +44,5 @@ def run_flask(host, port, debug) -> bool:
             print("There was an error setting up the database init")
     else:
         print("Failed to start MQTT client.")
-        _init_subscriptions()
-        socketio.run(app, host=host, port=port, debug=debug, use_reloader=False)
     
     return False

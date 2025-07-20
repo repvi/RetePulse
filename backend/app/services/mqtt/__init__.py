@@ -14,6 +14,9 @@ Main Components:
 # Import configuration first
 from .config import MQTTConfig, get_config_value, reload_config
 
+# Import SocketIO function from extensions
+from ...extensions import socketio_device_status_update
+
 # Then import service functions
 from .mqtt_service import (
     # Core MQTT client functions
@@ -74,4 +77,7 @@ __all__ = [
     'MQTTConfig',
     'get_config_value',
     'reload_config',
+    
+    # SocketIO functions
+    'socketio_device_status_update',
 ]

@@ -1,3 +1,4 @@
+from . import socketio_device_status_update
 from app.app_instance import app, db, socketio
 from app.models.models import Device
 import paho.mqtt.client as mqtt
@@ -113,10 +114,7 @@ def device_set_status(data) -> None:
                 existing_device.status = status
                 db.session.commit()
                 print(f"Updated device {name} status to {status}")
-                socketio.emit('device_status_update', {
-                    'name': name,
-                    'status': status
-                })
+                socketio_device_status_update(name, status)
             else:
                 print(f"Device {name} not found in database, cannot update status.")
                 device_send_reconfigure(name)
@@ -177,7 +175,6 @@ def on_connect(client, userdata, flags, rc) -> None:
     client_id = client._client_id.decode()
     print(f"Device {client_id} connected with result code {rc}")
     client.subscribe(MQTTConfig.TOPIC_SET_DEVICE) # heavier version for status updates
-    client.subscribe(MQTTConfig.TOPIC_STATUS) # for realtime status updates
 
 def on_message(client, userdata, msg) -> None:
     """

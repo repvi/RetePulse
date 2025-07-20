@@ -28,7 +28,7 @@ function GPIOConfigOptions({ onConfigComplete, onReset, onDataUpdate }) {
     if (onDataUpdate) {
       onDataUpdate({
         pin: pinNumber,
-        direction: direction
+        state: direction
       });
     }
   }, [pinNumber, direction, onDataUpdate]);

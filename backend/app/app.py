@@ -3,6 +3,7 @@ from flask import request, jsonify
 from flask_cors import CORS
 from sqlalchemy import select
 from .app_instance import app, db, socketio
+from .extensions import socketio_device_status_update
 from .models import Device
 from .config import REACT_APP_URL
 from .start import run_flask
@@ -110,6 +111,13 @@ def control_device():
         elif command == "reset":
             print(f"Sending reset command to device: {name}")
             send_message(send_topic, json.dumps({"command": "reset"}))
+            existing_device = db.session.execute(select(Device).where(Device.name == name)).scalar_one_or_none()
+            if existing_device:
+                print(f"Resetting device {name} status in database")
+                existing_device.status = "resetting"
+                db.session.commit()
+                socketio_device_status_update(name, "resetting")
+
 
         return '', 204  # 204 means "No Content"
 #
