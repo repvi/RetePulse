@@ -17,4 +17,6 @@ JWT_SECRET_KEY = os.getenv("jwt-secret-key", "uvenv_load_ap3x")
 
 REACT_APP_URL = os.getenv("react-app-url", "http://localhost:3000")
 
+IOT_WEB_URL = os.getenv("iot-web-url", "http://192.168.1.175:3000")
+
 SOCKETIO_URL = os.getenv("socketio-url")

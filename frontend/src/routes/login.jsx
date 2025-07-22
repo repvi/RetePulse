@@ -1,14 +1,72 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion';
-import './css/login.css'; // Adjust the path as needed
 import styles from './modules/login.module.css'; // Adjust the path as needed
 import { getLoginAPI } from '../api/flask/flaskapi'; // Adjust the import path as needed
 import { user_id } from '../api/flask/flaskapi'; // Adjust the import path as needed
 import NavigateWithBackTrack from "../backtrack"; // Import backtrack functionality if needed
 import useNavigateWithBacktrack from '../backtrack';
-import bgVideo from '../assets/login-background.mp4'; // Adjust the path as needed
 // <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+
+function LoginError({ error }) {
+  if (!error) return null;
+  return (
+    <motion.div 
+      className={styles.errorMessage}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <p>{error}</p>
+    </motion.div>
+  );
+}
+
+function LoginBackgroundVideo({ handleVideoLoad }) {
+  return (
+    <video 
+      autoPlay 
+      loop 
+      muted 
+      className={styles["background-video"]}
+      onLoadedData={handleVideoLoad}
+      onCanPlay={handleVideoLoad}
+    >
+      <source src="/assets/login-background.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  );
+}
+
+function LoginForm({ formData, handleChange, handleSubmit, error }) {
+  return (
+    <div className={styles.container}>
+      <h2 className={styles['login-title']}>LOGIN</h2>
+      <form onSubmit={handleSubmit} className="login-form" autoComplete="off">
+        <input
+          type="text"
+          name="login_user"
+          placeholder="Username"
+          autoComplete="off"
+          value={formData.username}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="password"
+          name="login_pass"
+          placeholder="Password"
+          autoComplete="new-password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
+        <input type="submit" value="login" autoComplete='off'/>
+      </form>
+      <LoginError error={error} />
+    </div>
+  );
+}
 
 function loginfailedMessage() {
   return (
@@ -99,73 +157,23 @@ export default function Login() {
       {/* Main Login Page */}
       {!isLoading && (
         <motion.div
-          className={'login-page'}
-          style={{
-            position: 'relative', 
-            background: 'none',
-            overflow: 'hidden',
-            height: '100vh',
-            backgroundSize: 'cover',
-            backgroundPosition: 'top left',
-            backgroundColor: 'transparent',
-            display: 'flex',
-            justifyContent: 'center',
-          }}
+          className={styles['login-page']}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <video 
-            autoPlay 
-            loop 
-            muted 
-            className={styles["background-video"]}
-            onLoadedData={handleVideoLoad}
-            onCanPlay={handleVideoLoad}
-          >
-            <source src={bgVideo} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-          
+          <LoginBackgroundVideo handleVideoLoad={handleVideoLoad} />
           <motion.div
             initial={{y: -50, opacity: 0}}
             animate={{y: 0, opacity: 1}}
             transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}
           >
-            <div className={styles.container}>
-              <h2 className={styles['login-title']}>LOGIN</h2>
-              <form onSubmit={handleSubmit} className="login-form">
-                <input
-                  type="text"
-                  name="username"
-                  placeholder="Username"
-                  autoComplete="off"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
-                />
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Password"
-                  autoComplete="off"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
-                <input type="submit" value="login" autoComplete='off'/>
-              </form>
-              {error && (
-                <motion.div 
-                  className={styles.errorMessage}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <p>{error}</p>
-                </motion.div>
-              )}
-            </div>
+            <LoginForm 
+              formData={formData}
+              handleChange={handleChange}
+              handleSubmit={handleSubmit}
+              error={error}
+            />
           </motion.div>
         </motion.div>
       )}

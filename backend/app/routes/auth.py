@@ -3,10 +3,10 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 from flask_cors import CORS
 from app.extensions import db
 from app.models.models import User
-from app.config import REACT_APP_URL
+from app.config import REACT_APP_URL, IOT_WEB_URL
 
 auth_bp = Blueprint('auth', __name__)
-CORS(auth_bp, resources={r"/login": {"origins": REACT_APP_URL}}, supports_credentials=True)
+CORS(auth_bp, resources={r"/login": {"origins": [REACT_APP_URL, IOT_WEB_URL]}}, supports_credentials=True)
 
 def cors_preflight_response():
     response = make_response()
