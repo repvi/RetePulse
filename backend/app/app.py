@@ -5,7 +5,7 @@ from sqlalchemy import select
 from .app_instance import app, db, socketio
 from .extensions import socketio_device_status_update
 from .models import Device
-from .config import REACT_APP_URL
+from .config import REACT_APP_URL, IOT_WEB_URL
 from .start import run_flask
 import json
 # Placeholder for sensor data (can be updated elsewhere
@@ -16,9 +16,9 @@ DEVICE_CONTROL_ROUTE = '/device/control'
 
 CORS(app, 
     resources={
-        LOAD_DEVICES_ROUTE: {"origins": REACT_APP_URL},
-        DB_DELETE_ROUTE: {"origins": REACT_APP_URL},
-        DEVICE_CONTROL_ROUTE: {"origins": REACT_APP_URL}
+        LOAD_DEVICES_ROUTE: {"origins": [REACT_APP_URL, IOT_WEB_URL]},
+        DB_DELETE_ROUTE: {"origins": [REACT_APP_URL, IOT_WEB_URL]},
+        DEVICE_CONTROL_ROUTE: {"origins": [REACT_APP_URL, IOT_WEB_URL]}
     }, 
     supports_credentials=True
 )

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
-import './css/register.css'; // Adjust the path as needed
 import { getRegisterAPI } from '../api/flask/flaskapi'; // Adjust the import path as needed
 import styles from './modules/register.module.css'; // Adjust the path as needed
 

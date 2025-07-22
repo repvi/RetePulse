@@ -60,12 +60,7 @@ export default function Dashboard() {
   useSocketIOConnect(setDevices);
   
   return (
-    <motion.div 
-      className={"dashboard-page"}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
-    >
+    <div className={"dashboard-page"}>
       <main>
         <motion.div 
           className={styles['container']}
@@ -132,7 +127,7 @@ export default function Dashboard() {
           </motion.div>
         </motion.div>
       </main>
-    </motion.div>
+    </div>
     /* 
     <footer>
         <div class="footer-content" style="text-align: center;">

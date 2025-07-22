@@ -86,6 +86,7 @@ def device_connection_info(data) -> None:
                 db.session.add(new_device)
 
             db.session.commit()
+            set_device_subscriptions(device_name)
             # Emit update after successful database operation
             socketio.emit('device_update', {
                 'device_name': device_name,
