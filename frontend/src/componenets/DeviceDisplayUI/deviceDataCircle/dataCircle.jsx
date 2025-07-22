@@ -13,11 +13,13 @@ export function DeviceUART({ progress = 0 }) {
       <div className={styles['circle-container']}>
         <div
           className={styles.circle}
-          style={{ "--progress-angle": angle }}  // ← set your CSS var here
+          style={{ "--progress-angle": angle }}
         >
-          <div className={styles.progress}></div>
+          <div className={styles['circle-glass']} />
+          {/* Progress number hidden */}
         </div>
       </div>
+      <div className={styles['uart-label']}>UART</div>
     </div>
   );
 }
