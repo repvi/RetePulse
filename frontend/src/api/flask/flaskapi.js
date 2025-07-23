@@ -228,3 +228,27 @@ export async function controlDeviceAPI(name, command, additionalData = {}) {
         return { success: false, message: error.message || 'Failed to send control command' };
     }
 }
+
+export async function sendUpdateFile(file, model) {
+    // Use relative URL for proxy compatibility
+    const url = getFullFLaskURL('/ota/upload');
+    const formData = new FormData();
+    formData.append('file', file); // file is from <input type="file" />
+    formData.append('model_string', model); // any extra data
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return { success: true, message: 'File uploaded successfully' };
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        return { success: false, message: error.message || 'Failed to upload file' };
+    }
+}

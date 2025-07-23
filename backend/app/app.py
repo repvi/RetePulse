@@ -7,6 +7,8 @@ from .extensions import socketio_device_status_update
 from .models import Device
 from .config import REACT_APP_URL, IOT_WEB_URL
 from .start import run_flask
+from .services.ota import upload_file
+
 import json
 # Placeholder for sensor data (can be updated elsewhere
 

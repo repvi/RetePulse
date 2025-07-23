@@ -48,6 +48,8 @@ __version__ = "1.0.0"
 __author__ = "repvi"
 __description__ = "MQTT service for IoT device communication"
 
+MQTT_TOPIC_OTA = MQTTConfig.TOPIC_OTA
+
 # Public API
 __all__ = [
     # Core functions
@@ -77,6 +79,7 @@ __all__ = [
     'MQTTConfig',
     'get_config_value',
     'reload_config',
+    'MQTT_TOPIC_OTA',
     
     # SocketIO functions
     'socketio_device_status_update',

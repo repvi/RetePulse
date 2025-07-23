@@ -65,16 +65,19 @@ def get_upload_folder() -> str:
     """Get the firmware upload folder path from config or fallback"""
     path = get_ota_config_value(ota_config, 'file-storage-path')
     if path:
-        return path
-    
-    # Fallback for different platforms
-    import platform
-    if platform.system() == "Windows":
-        return os.path.join(os.getcwd(), 'firmware')
-    else:
-        return '/var/fm_project/firmware'
+        resolved = os.path.abspath(path)
+        print(f"[OTA] Using configured firmware folder: {resolved}")
+        return resolved
 
-def get_allowed_extensions() -> List[str]:
+    # Use firmware folder inside the ota service directory
+    ota_dir = os.path.dirname(os.path.abspath(__file__))
+    firmware_folder = os.path.join(ota_dir, 'firmware')
+    print(f"[OTA] Using OTA-local firmware folder: {firmware_folder}")
+    return firmware_folder
+
+from typing import Set
+
+def get_allowed_extensions() -> Set[str]:
     """Get allowed file extensions from config or fallback"""
     extensions = get_ota_config_value(ota_config, 'allowed-extensions', ['.bin'])
     # Remove dots if present and convert to set for faster lookup

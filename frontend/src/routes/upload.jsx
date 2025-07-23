@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { sendUpdateFile } from '../api/flask/flaskapi';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import './css/upload.css'; // Adjust the path as needed
@@ -6,6 +7,7 @@ import styles from './modules/upload.module.css';
 
 export default function UploadFirmware() {
   const [file, setFile] = useState(null);
+  const [model, setModel] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
 
@@ -16,31 +18,16 @@ export default function UploadFirmware() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!file) return;
-
     setIsUploading(true);
     setUploadStatus('');
-
-    const formData = new FormData();
-    formData.append('file', file);
-
     try {
-      const response = await fetch('/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        setUploadStatus('success');
-        setFile(null);
-        // Reset file input
-        e.target.reset();
-      } else {
-        setUploadStatus('error');
-      }
+      await sendUpdateFile(file, model);
+      setUploadStatus('success');
+      setFile(null);
+      setModel('');
+      e.target.reset();
     } catch (error) {
-      console.error('Error uploading file:', error);
       setUploadStatus('error');
     } finally {
       setIsUploading(false);
@@ -81,6 +68,20 @@ export default function UploadFirmware() {
           transition={{ duration: 0.7, delay: 0.4 }}
         >
           <form onSubmit={handleSubmit} encType="multipart/form-data">
+            <div className={styles['model-input-container']}>
+              <label htmlFor="model-input" className={styles['model-input-label']}>
+                Model String:
+              </label>
+              <input
+                id="model-input"
+                type="text"
+                name="model_string"
+                value={model}
+                onChange={e => setModel(e.target.value)}
+                placeholder="Enter model string..."
+                className={styles['model-input']}
+              />
+            </div>
             <div className={styles['file-input-container']}>
               <label htmlFor="file-input" className={styles['file-input-label']}>
                 <span className={styles['file-icon']}>📁</span>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion';
+import './css/login.css'; // Adjust the path as needed
 import styles from './modules/login.module.css'; // Adjust the path as needed
 import { getLoginAPI } from '../api/flask/flaskapi'; // Adjust the import path as needed
 import { user_id } from '../api/flask/flaskapi'; // Adjust the import path as needed
@@ -40,12 +41,12 @@ function LoginBackgroundVideo({ handleVideoLoad }) {
 
 function LoginForm({ formData, handleChange, handleSubmit, error }) {
   return (
-    <div className={styles.container}>
+    <div className={styles.container + ' login-page'}>
       <h2 className={styles['login-title']}>LOGIN</h2>
       <form onSubmit={handleSubmit} className="login-form" autoComplete="off">
         <input
           type="text"
-          name="login_user"
+          name="username"
           placeholder="Username"
           autoComplete="off"
           value={formData.username}
@@ -54,7 +55,7 @@ function LoginForm({ formData, handleChange, handleSubmit, error }) {
         />
         <input
           type="password"
-          name="login_pass"
+          name="password"
           placeholder="Password"
           autoComplete="new-password"
           value={formData.password}
