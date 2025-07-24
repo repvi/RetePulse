@@ -1,0 +1,18 @@
+{
+    "version": "1.0.0",
+    "allowed-extensions": [".bin", ".hex", ".elf"],
+    "max-file-size": "10MB",
+    "backup-count": 5,
+    "upload": {
+        "timeout": 300,
+        "chunk-size": 1048576
+    },
+    "validation": {
+        "checksum": true,
+        "signature": false
+    },
+    "notifications": {
+        "mqtt-topic": "ota",
+        "email": false
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "mqtt-broker": "broker.emqx.io",
+    "mqtt-broker-port": 1883,
+    "topic": {
+        "ota": "ota",
+        "device-info": "device_info",
+        "status": "status"
+    },
+
+    "send-topic": {
+        "control": "control"
+    }
+}

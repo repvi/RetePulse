@@ -1,0 +1,78 @@
+/* Glass-morphism and glowing effect for DeviceUART */
+.circle-glass {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  box-shadow: none;
+  backdrop-filter: none;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.progress {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  z-index: 3;
+  text-shadow: 0 1px 2px rgba(30,209,170,0.08);
+}
+
+.uart-label {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1ed1aa;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 2px rgba(30,209,170,0.06);
+}
+.device-sensor-area {
+    display: flex;
+    justify-content: center;
+}
+
+.circle-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.circle {
+  --progress-angle: 0deg;
+  --fill-color:   rgb(30, 209, 170);
+  --empty-color:  rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width:  150px;
+  height: 150px;
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      var(--fill-color) 0deg var(--progress-angle),
+      var(--empty-color) var(--progress-angle) 360deg
+    );
+  position: relative;
+  /* Create a transparent center using mask */
+  -webkit-mask-image: radial-gradient(circle 40px at center, transparent 0, transparent 39px, black 40px);
+  mask-image: radial-gradient(circle 40px at center, transparent 0, transparent 39px, black 40px);
+}
+
+
+.progress {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+}

@@ -1,0 +1,5 @@
+__pycache__/
+firmware/
+instance/
+encryption/
+venv/

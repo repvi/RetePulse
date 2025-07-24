@@ -1,0 +1,171 @@
+.container {
+    --container-background: linear-gradient(135deg, #0c2543 0%, #1a365d 50%, #2d3748 100%);
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: auto;
+    min-height: calc(100vh - 200px); /* Subtract footer height */
+    padding-bottom: 20px;
+    background: var(--container-background);
+    color: snow;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    position: relative;
+    justify-content: flex-start;
+}
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.container > * {
+    position: relative;
+    z-index: 2;
+}
+
+.inner-main-card {
+    --inner-main-card-padding-value: 40px;
+    width: calc(100% - 40px); 
+    padding: var(--inner-main-card-padding-value);
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    margin: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+    height: fit-content;
+}
+
+/* Dashboard Title Styling */
+#dashboard-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin: 30px 0;
+    background: linear-gradient(135deg, #64b5f6, #42a5f5, #2196f3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+/* Devices Header Styling */
+.devices-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(100, 181, 246, 0.3);
+}
+
+.devices-header h3 {
+    font-size: 1.5rem;
+    color: #e3f2fd;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.devices-icon {
+    font-size: 1.2rem;
+    color: #64b5f6;
+}
+
+.device-count {
+    background: linear-gradient(135deg, #64b5f6, #42a5f5);
+    color: #0d47a1;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+/* Bottom Container Styling */
+.bottom-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+    padding: 20px;
+}
+
+.upload, .logout {
+    background: linear-gradient(135deg, #1976d2, #1565c0);
+    border-radius: 12px;
+    padding: 15px 30px;
+    box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.upload:hover, .logout:hover {
+    background: linear-gradient(135deg, #2196f3, #1976d2);
+    box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+    transform: translateY(-2px);
+}
+
+.upload a, .logout a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.3s ease;
+}
+
+.upload a:hover, .logout a:hover {
+    color: #e3f2fd;
+}
+
+.action-icon {
+    font-size: 1.1rem;
+}
+
+.toggle-button {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: snow;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    border: 2px solid #000000;
+    width: 50%;
+}
+
+.toggle-button.off {
+    background-color: rgba(0, 0, 0, 0);
+    color: snow;
+    padding: 10px;
+    border: 2px solid #000000;
+    width: 50%;
+}
+
+.clearfix {
+    clear: both;
+}
