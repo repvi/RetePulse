@@ -1,9 +1,7 @@
 from . import UPLOAD_FOLDER, ALLOWED_EXTENSIONS, is_file_allowed, get_firmware_path, validate_ota_config
 from flask import Blueprint, request, render_template, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-from flask import current_app
 from flask_cors import CORS
-from ...utils.auth_utils import login_required
  # Import inside function to avoid circular import
 
 import os
@@ -29,7 +27,7 @@ def upload_file():
     Handle firmware file uploads.
     - GET: Render upload form.
     - POST: Save uploaded .bin file, trigger OTA update via MQTT, and redirect to dashboard.
-    """
+    # """
     if request.method == 'POST':
         # If AJAX request, return JSON instead of redirect
         is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.is_json

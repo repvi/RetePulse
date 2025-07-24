@@ -13,7 +13,7 @@ Main Components:
 
 import json
 import os
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Set
 
 # Configuration loader for OTA settings
 def load_ota_config() -> Dict[str, Any]:
@@ -74,8 +74,6 @@ def get_upload_folder() -> str:
     firmware_folder = os.path.join(ota_dir, 'firmware')
     print(f"[OTA] Using OTA-local firmware folder: {firmware_folder}")
     return firmware_folder
-
-from typing import Set
 
 def get_allowed_extensions() -> Set[str]:
     """Get allowed file extensions from config or fallback"""
