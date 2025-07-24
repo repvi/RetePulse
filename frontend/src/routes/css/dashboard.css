@@ -1,0 +1,55 @@
+.dashboard-page {
+    --main-color: #091d35;
+    background-color: var(--main-color);
+    height: 100vh;
+}
+
+.dashboard-page html,
+.dashboard-page body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background-color: var(--main-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-page h2 {
+    text-align: center;
+}
+
+.dashboard-page header {
+    left: 0;
+    top: 0;
+    color: snow;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-page main {
+    --container-background: #0c2543;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    min-height: 650px;
+    padding-bottom: 20px;
+    background-color: var(--container-background);
+    color: snow;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+.dashboard-page footer {
+    height: 80px;      /* Fixed height */
+    width: 100%;
+    padding: 10px;
+    background-color: var(--container-background);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;    /* Key change: pushes footer to bottom */
+}

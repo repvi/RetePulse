@@ -1,0 +1,508 @@
+/* Main device control box */
+.device-control-box {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  word-wrap: break-word;
+  margin: 0;
+  position: static;
+}
+
+/* Outer wrapper for containment */
+.control-device-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Form containment */
+.control-device-form {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* GPIO wrapper */
+.gpio-wrapper {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.device-control-box:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Form styling */
+.device-control-box form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Main control label and select */
+.device-control-label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 600;
+  color: #e3f2fd;
+  font-size: 14px;
+  width: 100%;
+}
+
+.device-control-label span {
+  background: linear-gradient(135deg, rgba(100, 181, 246, 0.2), rgba(33, 150, 243, 0.15));
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(100, 181, 246, 0.3);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  box-shadow: 0 3px 12px rgba(33, 150, 243, 0.2);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.device-control-label span:hover {
+  background: linear-gradient(135deg, rgba(100, 181, 246, 0.3), rgba(33, 150, 243, 0.25));
+  border-color: rgba(100, 181, 246, 0.5);
+  box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
+  transform: translateY(-1px);
+}
+
+.device-control-label select {
+  padding: 12px 14px;
+  border: 1px solid rgba(100, 181, 246, 0.3);
+  border-radius: 8px;
+  font-size: 14px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.1);
+  font-weight: 500;
+}
+
+.device-control-label select option {
+  background: rgba(255, 255, 255, 0.1);
+  color: #000000;
+  padding: 10px 12px;
+  font-weight: 500;
+  border: none;
+  backdrop-filter: blur(10px);
+}
+
+.device-control-label select option:checked {
+  background: rgba(255, 255, 255, 0.2);
+  color: #000000;
+  font-weight: 600;
+}
+
+.device-control-label select:focus {
+  outline: none;
+  border-color: rgba(100, 181, 246, 0.6);
+  box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.2), 0 4px 12px rgba(33, 150, 243, 0.2);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+}
+
+.device-control-label select:hover {
+  border-color: rgba(100, 181, 246, 0.5);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+  box-shadow: 0 3px 10px rgba(33, 150, 243, 0.15);
+}
+
+/* GPIO control options container */
+.gpio-control-options {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Section headings */
+.gpio-control-options h3,
+.gpio-config-options h3,
+.gpio-set-state-options h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  width: 100%;
+}
+
+.gpio-option-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.gpio-option-field label {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(56, 142, 60, 0.15));
+  backdrop-filter: blur(5px);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(76, 175, 80, 0.25);
+  letter-spacing: 0.3px;
+  text-transform: capitalize;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15);
+  transition: all 0.3s ease;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.gpio-option-field label:hover {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(56, 142, 60, 0.25));
+  border-color: rgba(76, 175, 80, 0.4);
+  box-shadow: 0 3px 12px rgba(76, 175, 80, 0.25);
+  transform: translateY(-1px);
+}
+
+.gpio-option-field select {
+  padding: 10px 12px;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 6px;
+  font-size: 13px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(5px);
+  color: #ffffff;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.1);
+  font-weight: 500;
+}
+
+.gpio-option-field select option {
+  background: rgba(255, 255, 255, 0.1);
+  color: #000000;
+  padding: 8px 10px;
+  font-weight: 500;
+  border: none;
+}
+
+.gpio-option-field select option:checked {
+  background: rgba(255, 255, 255, 0.2);
+  color: #000000;
+  font-weight: 600;
+}
+
+.gpio-option-field select:focus {
+  outline: none;
+  border-color: rgba(76, 175, 80, 0.6);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2), 0 4px 12px rgba(76, 175, 80, 0.2);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+}
+
+.gpio-option-field select:hover {
+  border-color: rgba(76, 175, 80, 0.5);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+  box-shadow: 0 3px 10px rgba(76, 175, 80, 0.15);
+}
+
+/* GPIO config options */
+.gpio-config-options {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  border: 1px solid rgba(255, 152, 0, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.1);
+}
+
+.gpio-config-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.gpio-config-field label {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.2), rgba(245, 124, 0, 0.15));
+  backdrop-filter: blur(5px);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 152, 0, 0.25);
+  letter-spacing: 0.3px;
+  text-transform: capitalize;
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.15);
+  transition: all 0.3s ease;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.gpio-config-field label:hover {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.3), rgba(245, 124, 0, 0.25));
+  border-color: rgba(255, 152, 0, 0.4);
+  box-shadow: 0 3px 12px rgba(255, 152, 0, 0.25);
+  transform: translateY(-1px);
+}
+
+.gpio-config-field input,
+.gpio-config-field select {
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  border-radius: 6px;
+  font-size: 13px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(5px);
+  color: #ffffff;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.1);
+  font-weight: 500;
+}
+
+.gpio-config-field select option {
+  background: rgba(255, 255, 255, 0.1);
+  color: #000000;
+  padding: 8px 10px;
+  font-weight: 500;
+  border: none;
+}
+
+.gpio-config-field select option:checked {
+  background: rgba(255, 255, 255, 0.2);
+  color: #000000;
+  font-weight: 600;
+}
+
+.gpio-config-field input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.gpio-config-field input:focus,
+.gpio-config-field select:focus {
+  outline: none;
+  border-color: rgba(255, 152, 0, 0.6);
+  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.2), 0 4px 12px rgba(255, 152, 0, 0.2);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+}
+
+.gpio-config-field input:hover,
+.gpio-config-field select:hover {
+  border-color: rgba(255, 152, 0, 0.5);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+  box-shadow: 0 3px 10px rgba(255, 152, 0, 0.15);
+}
+
+/* GPIO set state options */
+.gpio-set-state-options {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  border: 1px solid rgba(156, 39, 176, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.1);
+}
+
+.gpio-set-state-options span {
+  display: block;
+  background: linear-gradient(135deg, rgba(156, 39, 176, 0.2), rgba(123, 31, 162, 0.15));
+  backdrop-filter: blur(5px);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(156, 39, 176, 0.25);
+  letter-spacing: 0.3px;
+  text-transform: capitalize;
+  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.15);
+  transition: all 0.3s ease;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.gpio-set-state-options span:hover {
+  background: linear-gradient(135deg, rgba(156, 39, 176, 0.3), rgba(123, 31, 162, 0.25));
+  border-color: rgba(156, 39, 176, 0.4);
+  box-shadow: 0 3px 12px rgba(156, 39, 176, 0.25);
+  transform: translateY(-1px);
+}
+
+.gpio-state-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.gpio-state-button {
+  padding: 10px 18px;
+  border: 2px solid rgba(156, 39, 176, 0.4);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(5px);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 70px;
+  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.15);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.gpio-state-button:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+  border-color: rgba(156, 39, 176, 0.6);
+  box-shadow: 0 3px 12px rgba(156, 39, 176, 0.25);
+  transform: translateY(-1px);
+}
+
+.gpio-state-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.15);
+}
+
+/* GPIO state button variants */
+.gpio-state-off {
+  background: linear-gradient(135deg, rgba(156, 39, 176, 0.3), rgba(123, 31, 162, 0.2)) !important;
+  color: #ffffff !important;
+  border-color: rgba(156, 39, 176, 0.6) !important;
+  box-shadow: 0 3px 12px rgba(156, 39, 176, 0.25) !important;
+}
+
+.gpio-state-off:hover {
+  background: linear-gradient(135deg, rgba(156, 39, 176, 0.4), rgba(123, 31, 162, 0.3)) !important;
+  border-color: rgba(156, 39, 176, 0.8) !important;
+  box-shadow: 0 4px 16px rgba(156, 39, 176, 0.35) !important;
+}
+
+.gpio-state-on {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1)) !important;
+  color: rgba(156, 39, 176, 1) !important;
+  border-color: rgba(156, 39, 176, 0.6) !important;
+  box-shadow: 0 3px 12px rgba(156, 39, 176, 0.2) !important;
+  text-shadow: none !important;
+}
+
+.gpio-state-on:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.15)) !important;
+  border-color: rgba(156, 39, 176, 0.8) !important;
+  box-shadow: 0 4px 16px rgba(156, 39, 176, 0.3) !important;
+}
+
+/* Error message styling */
+.error-message {
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.2), rgba(211, 47, 47, 0.15));
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-top: 12px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.15);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  font-weight: 500;
+}
+
+/* Submit button */
+.device-control-button {
+  padding: 14px 28px;
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.8), rgba(25, 118, 210, 0.9));
+  color: white;
+  border: 1px solid rgba(33, 150, 243, 0.4);
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
+  align-self: center;
+  width: fit-content;
+  margin-top: 12px;
+  backdrop-filter: blur(10px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.device-control-button:hover {
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.9), rgba(25, 118, 210, 1));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+  border-color: rgba(33, 150, 243, 0.6);
+}
+
+.device-control-button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .device-control-box {
+    padding: 15px;
+  }
+  
+  .gpio-state-buttons {
+    flex-direction: column;
+  }
+  
+  .gpio-state-button {
+    width: 100%;
+  }
+}
