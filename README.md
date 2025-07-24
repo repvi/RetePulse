@@ -86,3 +86,6 @@ This project is designed for learning and experimentation. It demonstrates:
 
 ## License
 MIT revpi 2025
+
+# Other Software
+What to have your esp32s connect to the softw3are? Check out [RetePulse Connect](https://github.com/repvi/RetePulse-Connect)
