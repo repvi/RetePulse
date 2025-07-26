@@ -11,8 +11,8 @@ RetePulse is an educational prototype for ESP32 device monitoring and OTA firmwa
 
 # Login
 In order to login. please use the following:
-username -> admin
-password -> password
+* username -> admin
+* password -> password
 ## Folder Structure
 ```
 fm_project/
