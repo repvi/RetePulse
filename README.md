@@ -9,6 +9,10 @@ RetePulse is an educational prototype for ESP32 device monitoring and OTA firmwa
 - OTA firmware upload and management
 - Modular, extensible codebase
 
+# How to use the frontend and backend
+ * cd backend, use the command venv\Scripts\activate, or create and then activate virtual environment for python code
+ * open another terminal, use the command cd frontend. Then run the command npm run dev. 
+   
 # Login
 In order to login. please use the following:
 * username -> admin
